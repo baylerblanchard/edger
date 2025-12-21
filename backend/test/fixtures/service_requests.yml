@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user_id: 1
+  service_type: MyString
+  status: MyString
+  address: MyString
+  scheduled_date: 2025-12-20
+
+two:
+  user_id: 1
+  service_type: MyString
+  status: MyString
+  address: MyString
+  scheduled_date: 2025-12-20
