@@ -143,7 +143,26 @@ export default function RequestServicePage() {
                                 Next Step
                             </Button>
                         ) : (
-                            <Button onClick={() => alert("Flow Complete! In a real app, this would submit to the Request API.")}>
+                            <Button onClick={() => {
+                                fetch("http://localhost:3001/service_requests", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({
+                                        service_request: {
+                                            service_type: selectedServices[0],
+                                            address: formData.address,
+                                            scheduled_date: formData.date,
+                                            status: "pending",
+                                            user_id: 1 // Mock User ID
+                                        }
+                                    })
+                                })
+                                    .then(res => {
+                                        if (res.ok) alert("Booking Confirmed!");
+                                        else alert("Error booking service");
+                                    })
+                                    .catch(err => alert("Error: " + err));
+                            }}>
                                 Confirm Booking
                             </Button>
                         )}

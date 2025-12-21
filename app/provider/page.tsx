@@ -1,41 +1,22 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, MapPin, Calendar, DollarSign } from "lucide-react";
-
-// Mock data for jobs
-const JOBS = [
-    {
-        id: 1,
-        title: "Lawn Mowing & Edging",
-        location: "452 Oak Lane, Springville",
-        date: "Today, 2:00 PM",
-        price: 60,
-        distance: "1.2 mi",
-        tags: ["Mowing", "Edging"],
-    },
-    {
-        id: 2,
-        title: "Weeding Flower Beds",
-        location: "890 Pine Street, Springville",
-        date: "Tomorrow, 10:00 AM",
-        price: 45,
-        distance: "2.5 mi",
-        tags: ["Weeding"],
-    },
-    {
-        id: 3,
-        title: "Full Lawn Service",
-        location: "123 Cedar Blvd, Mapleton",
-        date: "Dec 24, 9:00 AM",
-        price: 85,
-        distance: "3.8 mi",
-        tags: ["Mowing", "Edging", "Cleanup"],
-    },
-];
+import { MapPin, Calendar } from "lucide-react";
 
 export default function ProviderDashboard() {
+    const [jobs, setJobs] = useState([]);
+
+    useEffect(() => {
+        fetch("http://localhost:3001/service_requests")
+            .then((res) => res.json())
+            .then((data) => setJobs(data))
+            .catch((err) => console.error("Failed to fetch jobs:", err));
+    }, []);
+
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-background">
             <header className="bg-white dark:bg-card border-b sticky top-0 z-10">
@@ -59,34 +40,34 @@ export default function ProviderDashboard() {
                 </div>
 
                 <div className="space-y-4">
-                    {JOBS.map((job) => (
+                    {jobs.map((job: any) => (
                         <Card key={job.id} className="overflow-hidden">
                             <CardHeader className="pb-2">
                                 <div className="flex justify-between items-start">
                                     <div className="space-y-1">
-                                        <CardTitle className="text-lg">{job.title}</CardTitle>
+                                        <CardTitle className="text-lg capitalize">
+                                            {job.service_type === 'mowing' ? 'Lawn Mowing' : job.service_type}
+                                        </CardTitle>
                                         <p className="text-sm text-muted-foreground flex items-center gap-1">
-                                            <MapPin className="h-3 w-3" /> {job.location}
+                                            <MapPin className="h-3 w-3" /> {job.address}
                                         </p>
                                     </div>
                                     <div className="text-right">
                                         <span className="text-lg font-bold text-green-600 dark:text-green-400">
-                                            ${job.price}
+                                            $45
                                         </span>
-                                        <p className="text-xs text-muted-foreground">{job.distance}</p>
+                                        <p className="text-xs text-muted-foreground">1.2 mi</p>
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent className="pb-2">
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
-                                    <Calendar className="h-4 w-4" /> {job.date}
+                                    <Calendar className="h-4 w-4" /> {job.scheduled_date}
                                 </div>
                                 <div className="flex gap-2 flex-wrap">
-                                    {job.tags.map(tag => (
-                                        <Badge key={tag} variant="secondary" className="font-normal">
-                                            {tag}
-                                        </Badge>
-                                    ))}
+                                    <Badge variant="secondary" className="font-normal capitalize">
+                                        {job.status}
+                                    </Badge>
                                 </div>
                             </CardContent>
                             <CardFooter className="pt-2 bg-slate-50 dark:bg-slate-900/50">
@@ -94,6 +75,11 @@ export default function ProviderDashboard() {
                             </CardFooter>
                         </Card>
                     ))}
+                    {jobs.length === 0 && (
+                        <div className="text-center py-10 text-muted-foreground">
+                            No jobs available right now.
+                        </div>
+                    )}
                 </div>
             </main>
         </div>
