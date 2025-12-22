@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  post '/auth/login', to: 'authentication#login'
+  post '/auth/signup', to: 'authentication#signup'
   resources :service_requests
   resources :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

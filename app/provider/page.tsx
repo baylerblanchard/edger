@@ -7,15 +7,34 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Calendar } from "lucide-react";
 
+import { useRouter } from "next/navigation";
+
 export default function ProviderDashboard() {
+    const router = useRouter();
     const [jobs, setJobs] = useState([]);
 
     useEffect(() => {
-        fetch("http://localhost:3001/service_requests")
-            .then((res) => res.json())
-            .then((data) => setJobs(data))
+        const token = localStorage.getItem("token");
+        if (!token) {
+            router.push("/login");
+            return;
+        }
+
+        fetch("http://localhost:3001/service_requests", {
+            headers: {
+                "Authorization": token
+            }
+        })
+            .then((res) => {
+                if (res.status === 401) {
+                    router.push("/login"); // Token expired or invalid
+                    return [];
+                }
+                return res.json();
+            })
+            .then((data) => setJobs(data || []))
             .catch((err) => console.error("Failed to fetch jobs:", err));
-    }, []);
+    }, [router]);
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-background">

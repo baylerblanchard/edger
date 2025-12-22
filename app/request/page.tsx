@@ -144,16 +144,26 @@ export default function RequestServicePage() {
                             </Button>
                         ) : (
                             <Button onClick={() => {
+                                const token = localStorage.getItem("token");
+                                if (!token) {
+                                    alert("Please log in to book a service");
+                                    // In a real app, router.push("/login")
+                                    return;
+                                }
+
                                 fetch("http://localhost:3001/service_requests", {
                                     method: "POST",
-                                    headers: { "Content-Type": "application/json" },
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        "Authorization": token
+                                    },
                                     body: JSON.stringify({
                                         service_request: {
                                             service_type: selectedServices[0],
                                             address: formData.address,
                                             scheduled_date: formData.date,
                                             status: "pending",
-                                            user_id: 1 // Mock User ID
+                                            user_id: 1 // Ideally this comes from the token/user info, but backend sets it from 'current_user' if we update controller
                                         }
                                     })
                                 })
