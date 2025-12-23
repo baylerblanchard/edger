@@ -1,4 +1,5 @@
 class ServiceRequestsController < ApplicationController
+  before_action :authorize_request
   before_action :set_service_request, only: %i[ show update destroy ]
 
   # GET /service_requests
@@ -15,7 +16,7 @@ class ServiceRequestsController < ApplicationController
 
   # POST /service_requests
   def create
-    @service_request = ServiceRequest.new(service_request_params)
+    @service_request = @current_user.service_requests.new(service_request_params)
 
     if @service_request.save
       render json: @service_request, status: :created, location: @service_request
@@ -46,6 +47,6 @@ class ServiceRequestsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def service_request_params
-      params.expect(service_request: [ :user_id, :service_type, :status, :address, :scheduled_date ])
+      params.expect(service_request: [ :service_type, :status, :address, :scheduled_date ])
     end
 end

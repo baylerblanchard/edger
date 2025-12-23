@@ -155,21 +155,28 @@ export default function RequestServicePage() {
                                     method: "POST",
                                     headers: {
                                         "Content-Type": "application/json",
-                                        "Authorization": token
+                                        "Authorization": `Bearer ${token}`
                                     },
                                     body: JSON.stringify({
                                         service_request: {
                                             service_type: selectedServices[0],
                                             address: formData.address,
                                             scheduled_date: formData.date,
-                                            status: "pending",
-                                            user_id: 1 // Ideally this comes from the token/user info, but backend sets it from 'current_user' if we update controller
+                                            status: "pending"
                                         }
                                     })
                                 })
-                                    .then(res => {
-                                        if (res.ok) alert("Booking Confirmed!");
-                                        else alert("Error booking service");
+                                    .then(async res => {
+                                        if (res.ok) {
+                                            alert("Booking Confirmed!");
+                                            // Reset form or redirect
+                                            setStep(1);
+                                            setSelectedServices([]);
+                                            setFormData({ address: "", date: "" });
+                                        } else {
+                                            const data = await res.json();
+                                            alert("Error booking service: " + JSON.stringify(data));
+                                        }
                                     })
                                     .catch(err => alert("Error: " + err));
                             }}>
