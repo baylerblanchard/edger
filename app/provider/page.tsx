@@ -22,7 +22,7 @@ export default function ProviderDashboard() {
 
         fetch("http://localhost:3001/service_requests", {
             headers: {
-                "Authorization": token
+                "Authorization": `Bearer ${token}`
             }
         })
             .then((res) => {
