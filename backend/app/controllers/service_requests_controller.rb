@@ -27,7 +27,15 @@ class ServiceRequestsController < ApplicationController
 
   # PATCH/PUT /service_requests/1
   def update
-    if @service_request.update(service_request_params)
+    if @service_request.status == 'pending' && service_request_params[:status] == 'accepted'
+      # Identify who is accepting
+      @service_request.provider = @current_user
+      @service_request.status = 'accepted'
+    else
+      @service_request.assign_attributes(service_request_params)
+    end
+
+    if @service_request.save
       render json: @service_request
     else
       render json: @service_request.errors, status: :unprocessable_content

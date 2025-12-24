@@ -9,9 +9,17 @@ import { MapPin, Calendar } from "lucide-react";
 
 import { useRouter } from "next/navigation";
 
+interface Job {
+    id: number;
+    service_type: string;
+    address: string;
+    scheduled_date: string;
+    status: string;
+}
+
 export default function ProviderDashboard() {
     const router = useRouter();
-    const [jobs, setJobs] = useState([]);
+    const [jobs, setJobs] = useState<Job[]>([]);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -35,6 +43,35 @@ export default function ProviderDashboard() {
             .then((data) => setJobs(data || []))
             .catch((err) => console.error("Failed to fetch jobs:", err));
     }, [router]);
+
+    const acceptJob = async (jobId: number) => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        try {
+            const res = await fetch(`http://localhost:3001/service_requests/${jobId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    service_request: { status: "accepted" }
+                })
+            });
+
+            if (res.ok) {
+                // Remove the job from the list or mark as accepted locally
+                setJobs(prev => prev.map(job =>
+                    job.id === jobId ? { ...job, status: "accepted" } : job
+                ));
+            } else {
+                console.error("Failed to accept job");
+            }
+        } catch (err) {
+            console.error("Error accepting job:", err);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-background">
@@ -84,13 +121,17 @@ export default function ProviderDashboard() {
                                     <Calendar className="h-4 w-4" /> {job.scheduled_date}
                                 </div>
                                 <div className="flex gap-2 flex-wrap">
-                                    <Badge variant="secondary" className="font-normal capitalize">
+                                    <Badge variant={job.status === 'accepted' ? 'default' : 'secondary'} className="font-normal capitalize">
                                         {job.status}
                                     </Badge>
                                 </div>
                             </CardContent>
                             <CardFooter className="pt-2 bg-slate-50 dark:bg-slate-900/50">
-                                <Button className="w-full">Accept Job</Button>
+                                {job.status === 'accepted' ? (
+                                    <Button className="w-full" disabled>Accepted</Button>
+                                ) : (
+                                    <Button className="w-full" onClick={() => acceptJob(job.id)}>Accept Job</Button>
+                                )}
                             </CardFooter>
                         </Card>
                     ))}

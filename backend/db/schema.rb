@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_21_053844) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_24_033515) do
   create_table "service_requests", force: :cascade do |t|
     t.string "address"
     t.datetime "created_at", null: false
+    t.integer "provider_id"
     t.date "scheduled_date"
     t.string "service_type"
     t.string "status"
