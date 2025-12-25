@@ -5,6 +5,12 @@ class ServiceRequestsController < ApplicationController
   # GET /service_requests
   def index
     @service_requests = ServiceRequest.all
+    @service_requests = @service_requests.where(status: params[:status]) if params[:status].present?
+    
+    # If looking for "my jobs" as a provider
+    if params[:provider_id].present?
+      @service_requests = @service_requests.where(provider_id: params[:provider_id])
+    end
 
     render json: @service_requests
   end
