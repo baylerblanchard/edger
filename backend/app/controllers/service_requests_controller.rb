@@ -12,6 +12,11 @@ class ServiceRequestsController < ApplicationController
       @service_requests = @service_requests.where(provider_id: params[:provider_id])
     end
 
+    # If looking for "my requests" as a homeowner
+    if params[:user_id].present?
+      @service_requests = @service_requests.where(user_id: params[:user_id])
+    end
+
     render json: @service_requests
   end
 

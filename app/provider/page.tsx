@@ -7,6 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MapPin, Calendar, CheckCircle2, Briefcase } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 import { useRouter } from "next/navigation";
 
@@ -101,7 +102,31 @@ export default function ProviderDashboard() {
         }
     };
 
-    const JobCard = ({ job, isMyJob }: { job: Job, isMyJob: boolean }) => (
+    const completeJob = async (jobId: number) => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        try {
+            const res = await fetch(`http://localhost:3001/service_requests/${jobId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    service_request: { status: "completed" }
+                })
+            });
+
+            if (res.ok) {
+                fetchJobs();
+            }
+        } catch (err) {
+            console.error("Error completing job:", err);
+        }
+    };
+
+    const JobCard = ({ job, isMyJob, onAccept, onComplete }: { job: Job, isMyJob: boolean, onAccept: (id: number) => void, onComplete: (id: number) => void }) => (
         <Card key={job.id} className="overflow-hidden">
             <CardHeader className="pb-2">
                 <div className="flex justify-between items-start">
@@ -126,18 +151,24 @@ export default function ProviderDashboard() {
                     <Calendar className="h-4 w-4" /> {job.scheduled_date}
                 </div>
                 <div className="flex gap-2 flex-wrap">
-                    <Badge variant={job.status === 'accepted' ? 'default' : 'secondary'} className="font-normal capitalize">
+                    <Badge variant={job.status === 'accepted' ? 'default' : (job.status === 'completed' ? 'secondary' : 'outline')} className={cn("font-normal capitalize", job.status === 'completed' && "bg-green-100 text-green-800 hover:bg-green-100")}>
                         {job.status}
                     </Badge>
                 </div>
             </CardContent>
             <CardFooter className="pt-2 bg-slate-50 dark:bg-slate-900/50">
                 {isMyJob ? (
-                    <Button className="w-full" variant="outline" disabled>
-                        <CheckCircle2 className="mr-2 h-4 w-4" /> Accepted
-                    </Button>
+                    job.status === 'completed' ? (
+                        <Button className="w-full" variant="outline" disabled>
+                            <CheckCircle2 className="mr-2 h-4 w-4" /> Completed
+                        </Button>
+                    ) : (
+                        <Button className="w-full" variant="default" onClick={() => onComplete(job.id)}>
+                            Mark Complete
+                        </Button>
+                    )
                 ) : (
-                    <Button className="w-full" onClick={() => acceptJob(job.id)}>Accept Job</Button>
+                    <Button className="w-full" onClick={() => onAccept(job.id)}>Accept Job</Button>
                 )}
             </CardFooter>
         </Card>
@@ -174,7 +205,15 @@ export default function ProviderDashboard() {
 
                     <TabsContent value="available" className="space-y-4">
                         {availableJobs.length > 0 ? (
-                            availableJobs.map(job => <JobCard key={job.id} job={job} isMyJob={false} />)
+                            availableJobs.map(job => (
+                                <JobCard
+                                    key={job.id}
+                                    job={job}
+                                    isMyJob={false}
+                                    onAccept={acceptJob}
+                                    onComplete={completeJob}
+                                />
+                            ))
                         ) : (
                             <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
                                 <p>No new jobs available in your area.</p>
@@ -184,7 +223,15 @@ export default function ProviderDashboard() {
 
                     <TabsContent value="schedule" className="space-y-4">
                         {myJobs.length > 0 ? (
-                            myJobs.map(job => <JobCard key={job.id} job={job} isMyJob={true} />)
+                            myJobs.map(job => (
+                                <JobCard
+                                    key={job.id}
+                                    job={job}
+                                    isMyJob={true}
+                                    onAccept={acceptJob}
+                                    onComplete={completeJob}
+                                />
+                            ))
                         ) : (
                             <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
                                 <p>You haven't accepted any jobs yet.</p>

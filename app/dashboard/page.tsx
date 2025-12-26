@@ -1,0 +1,147 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { MapPin, Calendar, Clock, CheckCircle2, Leaf } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+interface Request {
+    id: number;
+    service_type: string;
+    address: string;
+    scheduled_date: string;
+    status: string;
+    provider_id?: number;
+}
+
+// Helper to decode JWT to get user ID
+const parseJwt = (token: string) => {
+    try {
+        return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+        return null;
+    }
+};
+
+export default function DashboardPage() {
+    const router = useRouter();
+    const [requests, setRequests] = useState<Request[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            router.push("/login");
+            return;
+        }
+
+        const decoded = parseJwt(token);
+        if (!decoded?.user_id) {
+            router.push("/login");
+            return;
+        }
+
+        fetch(`http://localhost:3001/service_requests?user_id=${decoded.user_id}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        })
+            .then((res) => {
+                if (res.status === 401) {
+                    router.push("/login");
+                    return [];
+                }
+                return res.json();
+            })
+            .then((data) => {
+                setRequests(data || []);
+                setIsLoading(false);
+            })
+            .catch((err) => {
+                console.error("Failed to fetch requests:", err);
+                setIsLoading(false);
+            });
+    }, [router]);
+
+    const getStatusBadge = (status: string) => {
+        switch (status) {
+            case 'completed':
+                return <Badge className="bg-green-600 hover:bg-green-700">Completed</Badge>;
+            case 'accepted':
+                return <Badge className="bg-blue-600 hover:bg-blue-700">Accepted</Badge>;
+            default:
+                return <Badge variant="secondary">Pending</Badge>;
+        }
+    };
+
+    return (
+        <div className="min-h-screen bg-slate-50 dark:bg-background">
+            <header className="bg-white dark:bg-card border-b sticky top-0 z-10">
+                <div className="container flex h-16 items-center justify-between">
+                    <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary">
+                        <span>Edger</span>
+                    </Link>
+                    <div className="flex items-center gap-4">
+                        <Link href="/request">
+                            <Button size="sm">New Request</Button>
+                        </Link>
+                    </div>
+                </div>
+            </header>
+
+            <main className="container py-8 max-w-4xl mx-auto">
+                <h1 className="text-2xl font-bold mb-6">My Requests</h1>
+
+                {isLoading ? (
+                    <div className="text-center py-10">Loading...</div>
+                ) : (
+                    <div className="space-y-4">
+                        {requests.length > 0 ? (
+                            requests.map((req) => (
+                                <Card key={req.id}>
+                                    <CardHeader className="pb-2">
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <CardTitle className="text-lg capitalize flex items-center gap-2">
+                                                    {req.service_type === 'mowing' ? <Leaf className="h-4 w-4 text-green-600" /> : null}
+                                                    {req.service_type === 'mowing' ? 'Lawn Mowing' : req.service_type}
+                                                </CardTitle>
+                                                <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                                                    <MapPin className="h-3 w-3" /> {req.address}
+                                                </p>
+                                            </div>
+                                            {getStatusBadge(req.status)}
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                            <div className="flex items-center gap-1">
+                                                <Calendar className="h-4 w-4" /> {req.scheduled_date}
+                                            </div>
+                                            {req.status === 'accepted' && (
+                                                <div className="flex items-center gap-1 text-blue-600">
+                                                    <Clock className="h-4 w-4" /> Provider assigned
+                                                </div>
+                                            )}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))
+                        ) : (
+                            <div className="text-center py-16 bg-white rounded-lg border border-dashed">
+                                <h3 className="text-lg font-medium">No requests yet</h3>
+                                <p className="text-muted-foreground mb-4">Get started by booking your first service.</p>
+                                <Link href="/request">
+                                    <Button>Book Now</Button>
+                                </Link>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </main>
+        </div>
+    );
+}
