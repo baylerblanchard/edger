@@ -17,7 +17,7 @@ class ServiceRequestsController < ApplicationController
       @service_requests = @service_requests.where(user_id: params[:user_id])
     end
 
-    render json: @service_requests
+    render json: @service_requests, include: :review
   end
 
   # GET /service_requests/1

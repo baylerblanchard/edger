@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, Calendar, CheckCircle2, Briefcase } from "lucide-react";
+import { MapPin, Calendar, CheckCircle2, Briefcase, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import { useRouter } from "next/navigation";
@@ -35,6 +35,7 @@ export default function ProviderDashboard() {
     const [availableJobs, setAvailableJobs] = useState<Job[]>([]);
     const [myJobs, setMyJobs] = useState<Job[]>([]);
     const [userId, setUserId] = useState<number | null>(null);
+    const [rating, setRating] = useState<number>(0);
 
     const fetchJobs = useCallback(async () => {
         const token = localStorage.getItem("token");
@@ -44,7 +45,15 @@ export default function ProviderDashboard() {
         }
 
         const decoded = parseJwt(token);
-        if (decoded?.user_id) setUserId(decoded.user_id);
+        if (decoded?.user_id) {
+            setUserId(decoded.user_id);
+            // Fetch user profile for rating
+            fetch(`http://localhost:3001/users/${decoded.user_id}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.average_rating) setRating(data.average_rating);
+                });
+        }
 
         try {
             // Fetch Available Jobs (pending)
@@ -182,7 +191,14 @@ export default function ProviderDashboard() {
                         <span>Edger</span> <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">Pro</span>
                     </Link>
                     <div className="flex items-center gap-4">
-                        <span className="text-sm font-medium text-muted-foreground">My Earnings: $1,240.50</span>
+                        <div className="text-right">
+                            <div className="text-sm font-medium text-muted-foreground">My Earnings: $1,240.50</div>
+                            {rating > 0 && (
+                                <div className="text-xs font-bold text-yellow-500 flex items-center justify-end gap-1">
+                                    <Star className="h-3 w-3 fill-yellow-500" /> {rating} Rating
+                                </div>
+                            )}
+                        </div>
                         <Button size="sm" variant="outline">
                             Profile
                         </Button>

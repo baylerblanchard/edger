@@ -10,7 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_24_033515) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_27_042559) do
+  create_table "reviews", force: :cascade do |t|
+    t.text "comment"
+    t.datetime "created_at", null: false
+    t.integer "provider_id", null: false
+    t.integer "rating"
+    t.integer "reviewer_id", null: false
+    t.integer "service_request_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_id"], name: "index_reviews_on_provider_id"
+    t.index ["reviewer_id"], name: "index_reviews_on_reviewer_id"
+    t.index ["service_request_id"], name: "index_reviews_on_service_request_id"
+  end
+
   create_table "service_requests", force: :cascade do |t|
     t.string "address"
     t.datetime "created_at", null: false
@@ -29,4 +42,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_24_033515) do
     t.string "role"
     t.datetime "updated_at", null: false
   end
+
+  add_foreign_key "reviews", "service_requests"
+  add_foreign_key "reviews", "users", column: "provider_id"
+  add_foreign_key "reviews", "users", column: "reviewer_id"
 end

@@ -5,8 +5,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, Clock, CheckCircle2, Leaf } from "lucide-react";
+import { MapPin, Calendar, Clock, CheckCircle2, Leaf, Star } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { ReviewDialog } from "@/components/review-dialog";
 
 interface Request {
     id: number;
@@ -15,6 +16,10 @@ interface Request {
     scheduled_date: string;
     status: string;
     provider_id?: number;
+    review?: {
+        id: number;
+        rating: number;
+    };
 }
 
 // Helper to decode JWT to get user ID
@@ -127,6 +132,24 @@ export default function DashboardPage() {
                                                 </div>
                                             )}
                                         </div>
+                                        {req.status === 'completed' && !req.review && (
+                                            <div className="mt-4 flex justify-end">
+                                                <ReviewDialog
+                                                    serviceRequestId={req.id}
+                                                    onReviewSubmitted={() => {
+                                                        // Refresh requests
+                                                        window.location.reload();
+                                                    }}
+                                                />
+                                            </div>
+                                        )}
+                                        {req.status === 'completed' && req.review && (
+                                            <div className="mt-4 flex justify-end text-sm text-muted-foreground">
+                                                <span className="flex items-center gap-1 text-yellow-500">
+                                                    <Star className="h-4 w-4 fill-yellow-500" /> {req.review.rating} Stars
+                                                </span>
+                                            </div>
+                                        )}
                                     </CardContent>
                                 </Card>
                             ))
