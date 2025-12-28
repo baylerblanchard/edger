@@ -20,6 +20,7 @@ interface Request {
         id: number;
         rating: number;
     };
+    price?: string;
 }
 
 // Helper to decode JWT to get user ID
@@ -49,7 +50,8 @@ export default function DashboardPage() {
             return;
         }
 
-        fetch(`http://localhost:3001/service_requests?user_id=${decoded.user_id}`, {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+        fetch(`${apiUrl}/service_requests?user_id=${decoded.user_id}`, {
             headers: {
                 "Authorization": `Bearer ${token}`
             }
@@ -118,7 +120,10 @@ export default function DashboardPage() {
                                                     <MapPin className="h-3 w-3" /> {req.address}
                                                 </p>
                                             </div>
-                                            {getStatusBadge(req.status)}
+                                            <div className="text-right">
+                                                <div className="text-lg font-bold mb-1">${req.price || 45}</div>
+                                                {getStatusBadge(req.status)}
+                                            </div>
                                         </div>
                                     </CardHeader>
                                     <CardContent>
@@ -163,8 +168,9 @@ export default function DashboardPage() {
                             </div>
                         )}
                     </div>
-                )}
-            </main>
-        </div>
+                )
+                }
+            </main >
+        </div >
     );
 }

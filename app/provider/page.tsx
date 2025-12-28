@@ -49,8 +49,10 @@ export default function ProviderDashboard() {
         const decoded = parseJwt(token);
         if (decoded?.user_id) {
             setUserId(decoded.user_id);
+            setUserId(decoded.user_id);
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
             // Fetch user profile for rating and reviews
-            fetch(`http://localhost:3001/users/${decoded.user_id}`)
+            fetch(`${apiUrl}/users/${decoded.user_id}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.average_rating) setRating(data.average_rating);
@@ -60,7 +62,8 @@ export default function ProviderDashboard() {
 
         try {
             // Fetch Available Jobs (pending)
-            const availableRes = await fetch("http://localhost:3001/service_requests?status=pending", {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+            const availableRes = await fetch(`${apiUrl}/service_requests?status=pending`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             if (availableRes.ok) {
@@ -70,7 +73,8 @@ export default function ProviderDashboard() {
             // Fetch My Jobs (where provider_id = me)
             // Note: We need the user ID from the token for this query
             if (decoded?.user_id) {
-                const myJobsRes = await fetch(`http://localhost:3001/service_requests?provider_id=${decoded.user_id}`, {
+                const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+                const myJobsRes = await fetch(`${apiUrl}/service_requests?provider_id=${decoded.user_id}`, {
                     headers: { "Authorization": `Bearer ${token}` }
                 });
                 if (myJobsRes.ok) {
@@ -92,7 +96,8 @@ export default function ProviderDashboard() {
         if (!token) return;
 
         try {
-            const res = await fetch(`http://localhost:3001/service_requests/${jobId}`, {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+            const res = await fetch(`${apiUrl}/service_requests/${jobId}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -119,7 +124,8 @@ export default function ProviderDashboard() {
         if (!token) return;
 
         try {
-            const res = await fetch(`http://localhost:3001/service_requests/${jobId}`, {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+            const res = await fetch(`${apiUrl}/service_requests/${jobId}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -152,7 +158,7 @@ export default function ProviderDashboard() {
                     </div>
                     <div className="text-right">
                         <span className="text-lg font-bold text-green-600 dark:text-green-400">
-                            $45
+                            ${job.price || '45.00'}
                         </span>
                         <p className="text-xs text-muted-foreground">1.2 mi</p>
                     </div>

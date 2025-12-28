@@ -39,6 +39,7 @@ export default function RequestServicePage() {
     const [formData, setFormData] = useState({
         address: "",
         date: "",
+        price: "45",
     });
 
     const toggleService = (id: string) => {
@@ -128,6 +129,21 @@ export default function RequestServicePage() {
                                         />
                                     </div>
                                 </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="price">Offer Price ($)</Label>
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-2.5 text-muted-foreground">$</span>
+                                        <Input
+                                            id="price"
+                                            type="number"
+                                            className="pl-8"
+                                            placeholder="45.00"
+                                            value={formData.price}
+                                            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                                        />
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">Original estimate: $45. You can adjust this offer.</p>
+                                </div>
                             </div>
                         )}
                     </CardContent>
@@ -151,7 +167,8 @@ export default function RequestServicePage() {
                                     return;
                                 }
 
-                                fetch("http://localhost:3001/service_requests", {
+                                const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+                                fetch(`${apiUrl}/service_requests`, {
                                     method: "POST",
                                     headers: {
                                         "Content-Type": "application/json",
@@ -162,7 +179,8 @@ export default function RequestServicePage() {
                                             service_type: selectedServices[0],
                                             address: formData.address,
                                             scheduled_date: formData.date,
-                                            status: "pending"
+                                            status: "pending",
+                                            price: formData.price
                                         }
                                     })
                                 })
@@ -172,7 +190,7 @@ export default function RequestServicePage() {
                                             // Reset form or redirect
                                             setStep(1);
                                             setSelectedServices([]);
-                                            setFormData({ address: "", date: "" });
+                                            setFormData({ address: "", date: "", price: "45" });
                                         } else {
                                             const data = await res.json();
                                             alert("Error booking service: " + JSON.stringify(data));
