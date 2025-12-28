@@ -10,7 +10,13 @@ class UsersController < ApplicationController
 
   # GET /users/1
   def show
-    render json: @user, methods: [:average_rating]
+    render json: @user, include: {
+      provided_reviews: {
+        include: {
+          reviewer: { only: [:id, :email] }
+        }
+      }
+    }, methods: [:average_rating]
   end
 
   # POST /users

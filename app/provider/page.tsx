@@ -37,6 +37,8 @@ export default function ProviderDashboard() {
     const [userId, setUserId] = useState<number | null>(null);
     const [rating, setRating] = useState<number>(0);
 
+    const [reviews, setReviews] = useState<any[]>([]);
+
     const fetchJobs = useCallback(async () => {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -47,11 +49,12 @@ export default function ProviderDashboard() {
         const decoded = parseJwt(token);
         if (decoded?.user_id) {
             setUserId(decoded.user_id);
-            // Fetch user profile for rating
+            // Fetch user profile for rating and reviews
             fetch(`http://localhost:3001/users/${decoded.user_id}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.average_rating) setRating(data.average_rating);
+                    if (data.provided_reviews) setReviews(data.provided_reviews);
                 });
         }
 
@@ -210,12 +213,15 @@ export default function ProviderDashboard() {
                 <h1 className="text-2xl font-bold mb-6">Provider Dashboard</h1>
 
                 <Tabs defaultValue="available" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 mb-6">
+                    <TabsList className="grid w-full grid-cols-3 mb-6">
                         <TabsTrigger value="available" className="flex items-center gap-2">
                             <Briefcase className="h-4 w-4" /> Available Jobs
                         </TabsTrigger>
                         <TabsTrigger value="schedule" className="flex items-center gap-2">
                             <CheckCircle2 className="h-4 w-4" /> My Schedule
+                        </TabsTrigger>
+                        <TabsTrigger value="reviews" className="flex items-center gap-2">
+                            <Star className="h-4 w-4" /> Reviews
                         </TabsTrigger>
                     </TabsList>
 
@@ -251,6 +257,48 @@ export default function ProviderDashboard() {
                         ) : (
                             <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
                                 <p>You haven't accepted any jobs yet.</p>
+                            </div>
+                        )}
+                    </TabsContent>
+
+                    <TabsContent value="reviews" className="space-y-4">
+                        {reviews.length > 0 ? (
+                            reviews.map((review) => (
+                                <Card key={review.id}>
+                                    <CardHeader className="pb-2">
+                                        <div className="flex justify-between items-center">
+                                            <div className="flex items-center gap-2">
+                                                <div className="bg-primary/10 p-2 rounded-full">
+                                                    <Briefcase className="h-4 w-4 text-primary" />
+                                                </div>
+                                                <div>
+                                                    <p className="font-medium text-sm">{review.reviewer?.email || "Homeowner"}</p>
+                                                    <div className="flex items-center gap-1">
+                                                        {Array.from({ length: 5 }).map((_, i) => (
+                                                            <Star
+                                                                key={i}
+                                                                className={cn(
+                                                                    "h-3 w-3",
+                                                                    i < review.rating ? "fill-yellow-500 text-yellow-500" : "text-muted-foreground"
+                                                                )}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <span className="text-xs text-muted-foreground">
+                                                {new Date(review.created_at).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <p className="text-sm text-gray-600 dark:text-gray-300">"{review.comment}"</p>
+                                    </CardContent>
+                                </Card>
+                            ))
+                        ) : (
+                            <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
+                                <p>No reviews yet. Complete jobs to earn reviews!</p>
                             </div>
                         )}
                     </TabsContent>
