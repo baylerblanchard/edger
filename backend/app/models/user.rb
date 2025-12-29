@@ -11,4 +11,10 @@ class User < ApplicationRecord
     return 0 if provided_reviews.empty?
     provided_reviews.average(:rating).to_f.round(1)
   end
+
+  def total_earnings
+    # Sum the price of all completed service requests where this user is the provider
+    ServiceRequest.where(provider: self, status: 'completed').sum(:price).to_f
+  end
+
 end

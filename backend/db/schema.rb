@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_27_042559) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_27_220000) do
   create_table "reviews", force: :cascade do |t|
     t.text "comment"
     t.datetime "created_at", null: false
@@ -27,6 +27,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_27_042559) do
   create_table "service_requests", force: :cascade do |t|
     t.string "address"
     t.datetime "created_at", null: false
+    t.decimal "price", precision: 10, scale: 2
     t.integer "provider_id"
     t.date "scheduled_date"
     t.string "service_type"

@@ -36,6 +36,7 @@ export default function ProviderDashboard() {
     const [myJobs, setMyJobs] = useState<Job[]>([]);
     const [userId, setUserId] = useState<number | null>(null);
     const [rating, setRating] = useState<number>(0);
+    const [earnings, setEarnings] = useState<number>(0);
 
     const [reviews, setReviews] = useState<any[]>([]);
 
@@ -56,6 +57,7 @@ export default function ProviderDashboard() {
                 .then(res => res.json())
                 .then(data => {
                     if (data.average_rating) setRating(data.average_rating);
+                    if (data.total_earnings) setEarnings(data.total_earnings);
                     if (data.provided_reviews) setReviews(data.provided_reviews);
                 });
         }
@@ -201,7 +203,7 @@ export default function ProviderDashboard() {
                     </Link>
                     <div className="flex items-center gap-4">
                         <div className="text-right">
-                            <div className="text-sm font-medium text-muted-foreground">My Earnings: $1,240.50</div>
+                            <div className="text-sm font-medium text-muted-foreground">My Earnings: ${earnings.toFixed(2)}</div>
                             {rating > 0 && (
                                 <div className="text-xs font-bold text-yellow-500 flex items-center justify-end gap-1">
                                     <Star className="h-3 w-3 fill-yellow-500" /> {rating} Rating
