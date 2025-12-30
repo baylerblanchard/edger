@@ -210,8 +210,10 @@ export default function ProviderDashboard() {
                                 </div>
                             )}
                         </div>
-                        <Button size="sm" variant="outline">
-                            Profile
+                        <Button size="sm" variant="outline" asChild>
+                            <Link href="/profile">
+                                Profile
+                            </Link>
                         </Button>
                     </div>
                 </div>

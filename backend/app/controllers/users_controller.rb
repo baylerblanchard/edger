@@ -16,7 +16,8 @@ class UsersController < ApplicationController
           reviewer: { only: [:id, :email] }
         }
       }
-    }, methods: [:average_rating, :total_earnings]
+      }
+    }, methods: [:average_rating, :total_earnings, :profile_picture_url]
   end
 
   # POST /users
@@ -52,6 +53,6 @@ class UsersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_params
-      params.expect(user: [ :email, :password_digest, :role ])
+      params.expect(user: [ :email, :password_digest, :role, :profile_picture ])
     end
 end
