@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
+import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Calendar, CheckCircle2, Briefcase, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -39,6 +41,7 @@ export default function ProviderDashboard() {
     const [earnings, setEarnings] = useState<number>(0);
 
     const [reviews, setReviews] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
     const fetchJobs = useCallback(async () => {
         const token = localStorage.getItem("token");
@@ -86,6 +89,8 @@ export default function ProviderDashboard() {
 
         } catch (error) {
             console.error("Failed to fetch jobs", error);
+        } finally {
+            setLoading(false);
         }
     }, [router]);
 
@@ -147,51 +152,53 @@ export default function ProviderDashboard() {
     };
 
     const JobCard = ({ job, isMyJob, onAccept, onComplete }: { job: Job, isMyJob: boolean, onAccept: (id: number) => void, onComplete: (id: number) => void }) => (
-        <Card key={job.id} className="overflow-hidden">
-            <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                    <div className="space-y-1">
-                        <CardTitle className="text-lg capitalize">
-                            {job.service_type === 'mowing' ? 'Lawn Mowing' : job.service_type}
-                        </CardTitle>
-                        <p className="text-sm text-muted-foreground flex items-center gap-1">
-                            <MapPin className="h-3 w-3" /> {job.address}
-                        </p>
+        <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
+            <Card className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow">
+                <CardHeader className="pb-2">
+                    <div className="flex justify-between items-start">
+                        <div className="space-y-1">
+                            <CardTitle className="text-lg capitalize">
+                                {job.service_type === 'mowing' ? 'Lawn Mowing' : job.service_type}
+                            </CardTitle>
+                            <p className="text-sm text-muted-foreground flex items-center gap-1">
+                                <MapPin className="h-3 w-3" /> {job.address}
+                            </p>
+                        </div>
+                        <div className="text-right">
+                            <span className="text-lg font-bold text-green-600 dark:text-green-400">
+                                ${job.price || '45.00'}
+                            </span>
+                            <p className="text-xs text-muted-foreground">1.2 mi</p>
+                        </div>
                     </div>
-                    <div className="text-right">
-                        <span className="text-lg font-bold text-green-600 dark:text-green-400">
-                            ${job.price || '45.00'}
-                        </span>
-                        <p className="text-xs text-muted-foreground">1.2 mi</p>
+                </CardHeader>
+                <CardContent className="pb-2">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                        <Calendar className="h-4 w-4" /> {job.scheduled_date}
                     </div>
-                </div>
-            </CardHeader>
-            <CardContent className="pb-2">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
-                    <Calendar className="h-4 w-4" /> {job.scheduled_date}
-                </div>
-                <div className="flex gap-2 flex-wrap">
-                    <Badge variant={job.status === 'accepted' ? 'default' : (job.status === 'completed' ? 'secondary' : 'outline')} className={cn("font-normal capitalize", job.status === 'completed' && "bg-green-100 text-green-800 hover:bg-green-100")}>
-                        {job.status}
-                    </Badge>
-                </div>
-            </CardContent>
-            <CardFooter className="pt-2 bg-slate-50 dark:bg-slate-900/50">
-                {isMyJob ? (
-                    job.status === 'completed' ? (
-                        <Button className="w-full" variant="outline" disabled>
-                            <CheckCircle2 className="mr-2 h-4 w-4" /> Completed
-                        </Button>
+                    <div className="flex gap-2 flex-wrap">
+                        <Badge variant={job.status === 'accepted' ? 'default' : (job.status === 'completed' ? 'secondary' : 'outline')} className={cn("font-normal capitalize", job.status === 'completed' && "bg-green-100 text-green-800 hover:bg-green-100")}>
+                            {job.status}
+                        </Badge>
+                    </div>
+                </CardContent>
+                <CardFooter className="pt-2 bg-slate-50 dark:bg-slate-900/50">
+                    {isMyJob ? (
+                        job.status === 'completed' ? (
+                            <Button className="w-full" variant="outline" disabled>
+                                <CheckCircle2 className="mr-2 h-4 w-4" /> Completed
+                            </Button>
+                        ) : (
+                            <Button className="w-full" variant="default" onClick={() => onComplete(job.id)}>
+                                Mark Complete
+                            </Button>
+                        )
                     ) : (
-                        <Button className="w-full" variant="default" onClick={() => onComplete(job.id)}>
-                            Mark Complete
-                        </Button>
-                    )
-                ) : (
-                    <Button className="w-full" onClick={() => onAccept(job.id)}>Accept Job</Button>
-                )}
-            </CardFooter>
-        </Card>
+                        <Button className="w-full" onClick={() => onAccept(job.id)}>Accept Job</Button>
+                    )}
+                </CardFooter>
+            </Card>
+        </motion.div>
     );
 
     return (
@@ -236,16 +243,31 @@ export default function ProviderDashboard() {
                     </TabsList>
 
                     <TabsContent value="available" className="space-y-4">
-                        {availableJobs.length > 0 ? (
-                            availableJobs.map(job => (
-                                <JobCard
-                                    key={job.id}
-                                    job={job}
-                                    isMyJob={false}
-                                    onAccept={acceptJob}
-                                    onComplete={completeJob}
-                                />
-                            ))
+                        {loading ? (
+                            <div className="space-y-4">
+                                <Skeleton className="h-48 w-full rounded-xl" />
+                                <Skeleton className="h-48 w-full rounded-xl" />
+                                <Skeleton className="h-48 w-full rounded-xl" />
+                            </div>
+                        ) : availableJobs.length > 0 ? (
+                            <AnimatePresence>
+                                {availableJobs.map((job, index) => (
+                                    <motion.div
+                                        key={job.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
+                                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                                    >
+                                        <JobCard
+                                            job={job}
+                                            isMyJob={false}
+                                            onAccept={acceptJob}
+                                            onComplete={completeJob}
+                                        />
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
                         ) : (
                             <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
                                 <p>No new jobs available in your area.</p>
@@ -254,16 +276,30 @@ export default function ProviderDashboard() {
                     </TabsContent>
 
                     <TabsContent value="schedule" className="space-y-4">
-                        {myJobs.length > 0 ? (
-                            myJobs.map(job => (
-                                <JobCard
-                                    key={job.id}
-                                    job={job}
-                                    isMyJob={true}
-                                    onAccept={acceptJob}
-                                    onComplete={completeJob}
-                                />
-                            ))
+                        {loading ? (
+                            <div className="space-y-4">
+                                <Skeleton className="h-48 w-full rounded-xl" />
+                                <Skeleton className="h-48 w-full rounded-xl" />
+                            </div>
+                        ) : myJobs.length > 0 ? (
+                            <AnimatePresence>
+                                {myJobs.map((job, index) => (
+                                    <motion.div
+                                        key={job.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
+                                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                                    >
+                                        <JobCard
+                                            job={job}
+                                            isMyJob={true}
+                                            onAccept={acceptJob}
+                                            onComplete={completeJob}
+                                        />
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
                         ) : (
                             <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
                                 <p>You haven't accepted any jobs yet.</p>
@@ -272,40 +308,54 @@ export default function ProviderDashboard() {
                     </TabsContent>
 
                     <TabsContent value="reviews" className="space-y-4">
-                        {reviews.length > 0 ? (
-                            reviews.map((review) => (
-                                <Card key={review.id}>
-                                    <CardHeader className="pb-2">
-                                        <div className="flex justify-between items-center">
-                                            <div className="flex items-center gap-2">
-                                                <div className="bg-primary/10 p-2 rounded-full">
-                                                    <Briefcase className="h-4 w-4 text-primary" />
-                                                </div>
-                                                <div>
-                                                    <p className="font-medium text-sm">{review.reviewer?.email || "Homeowner"}</p>
-                                                    <div className="flex items-center gap-1">
-                                                        {Array.from({ length: 5 }).map((_, i) => (
-                                                            <Star
-                                                                key={i}
-                                                                className={cn(
-                                                                    "h-3 w-3",
-                                                                    i < review.rating ? "fill-yellow-500 text-yellow-500" : "text-muted-foreground"
-                                                                )}
-                                                            />
-                                                        ))}
+                        {loading ? (
+                            <div className="space-y-4">
+                                <Skeleton className="h-32 w-full rounded-xl" />
+                                <Skeleton className="h-32 w-full rounded-xl" />
+                            </div>
+                        ) : reviews.length > 0 ? (
+                            <AnimatePresence>
+                                {reviews.map((review, index) => (
+                                    <motion.div
+                                        key={review.id}
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                                    >
+                                        <Card>
+                                            <CardHeader className="pb-2">
+                                                <div className="flex justify-between items-center">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="bg-primary/10 p-2 rounded-full">
+                                                            <Briefcase className="h-4 w-4 text-primary" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-medium text-sm">{review.reviewer?.email || "Homeowner"}</p>
+                                                            <div className="flex items-center gap-1">
+                                                                {Array.from({ length: 5 }).map((_, i) => (
+                                                                    <Star
+                                                                        key={i}
+                                                                        className={cn(
+                                                                            "h-3 w-3",
+                                                                            i < review.rating ? "fill-yellow-500 text-yellow-500" : "text-muted-foreground"
+                                                                        )}
+                                                                    />
+                                                                ))}
+                                                            </div>
+                                                        </div>
                                                     </div>
+                                                    <span className="text-xs text-muted-foreground">
+                                                        {new Date(review.created_at).toLocaleDateString()}
+                                                    </span>
                                                 </div>
-                                            </div>
-                                            <span className="text-xs text-muted-foreground">
-                                                {new Date(review.created_at).toLocaleDateString()}
-                                            </span>
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <p className="text-sm text-gray-600 dark:text-gray-300">"{review.comment}"</p>
-                                    </CardContent>
-                                </Card>
-                            ))
+                                            </CardHeader>
+                                            <CardContent>
+                                                <p className="text-sm text-gray-600 dark:text-gray-300">"{review.comment}"</p>
+                                            </CardContent>
+                                        </Card>
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
                         ) : (
                             <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
                                 <p>No reviews yet. Complete jobs to earn reviews!</p>
@@ -314,6 +364,6 @@ export default function ProviderDashboard() {
                     </TabsContent>
                 </Tabs>
             </main>
-        </div>
+        </div >
     );
 }

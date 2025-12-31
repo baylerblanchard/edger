@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2, Leaf, Clock, Shield } from "lucide-react";
 
@@ -40,18 +43,38 @@ export default function Home() {
         {/* Hero Section */}
         <section className="relative py-20 md:py-32 overflow-hidden bg-gradient-to-b from-green-50 to-white dark:from-green-950/20 dark:to-background">
           <div className="container relative z-10">
-            <div className="mx-auto max-w-3xl text-center">
-              <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl mb-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mx-auto max-w-3xl text-center"
+            >
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="text-4xl font-extrabold tracking-tight sm:text-6xl mb-6"
+              >
                 Lawncare, <span className="text-primary">simplified.</span>
-              </h1>
-              <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+                className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto"
+              >
                 Get your lawn mowed, edged, and looking perfect with just a few taps.
                 Reliable local pros, transparent pricing, and instant booking.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+                className="flex flex-col sm:flex-row gap-4 justify-center"
+              >
                 <Link href="/request">
-                  <Button size="lg" className="w-full sm:w-auto gap-2">
-                    Book a Service <ArrowRight className="h-4 w-4" />
+                  <Button size="lg" className="w-full sm:w-auto gap-2 group">
+                    Book a Service <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
                 <Link href="/provider">
@@ -59,8 +82,8 @@ export default function Home() {
                     Earn as a Provider
                   </Button>
                 </Link>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
           {/* Decorative background blobs */}
           <div className="absolute top-0 -left-4 w-72 h-72 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
@@ -72,7 +95,13 @@ export default function Home() {
           <div className="container">
             <h2 className="text-3xl font-bold text-center mb-12">How Edger Works</h2>
             <div className="grid md:grid-cols-3 gap-8">
-              <div className="flex flex-col items-center text-center p-6 rounded-lg border bg-card text-card-foreground shadow-sm">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1, duration: 0.5 }}
+                className="flex flex-col items-center text-center p-6 rounded-lg border bg-card text-card-foreground shadow-sm"
+              >
                 <div className="p-3 rounded-full bg-green-100 dark:bg-green-900 mb-4">
                   <Clock className="h-6 w-6 text-primary" />
                 </div>
@@ -80,8 +109,14 @@ export default function Home() {
                 <p className="text-muted-foreground">
                   Select your service, choose a time, and get matched with a pro in seconds.
                 </p>
-              </div>
-              <div className="flex flex-col items-center text-center p-6 rounded-lg border bg-card text-card-foreground shadow-sm">
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="flex flex-col items-center text-center p-6 rounded-lg border bg-card text-card-foreground shadow-sm"
+              >
                 <div className="p-3 rounded-full bg-green-100 dark:bg-green-900 mb-4">
                   <Shield className="h-6 w-6 text-primary" />
                 </div>
@@ -89,8 +124,14 @@ export default function Home() {
                 <p className="text-muted-foreground">
                   Every provider is background checked and rated by neighbors like you.
                 </p>
-              </div>
-              <div className="flex flex-col items-center text-center p-6 rounded-lg border bg-card text-card-foreground shadow-sm">
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+                className="flex flex-col items-center text-center p-6 rounded-lg border bg-card text-card-foreground shadow-sm"
+              >
                 <div className="p-3 rounded-full bg-green-100 dark:bg-green-900 mb-4">
                   <CheckCircle2 className="h-6 w-6 text-primary" />
                 </div>
@@ -98,7 +139,7 @@ export default function Home() {
                 <p className="text-muted-foreground">
                   Payment is only released when you&apos;re 100% happy with the job.
                 </p>
-              </div>
+              </motion.div>
             </div>
           </div>
         </section>
