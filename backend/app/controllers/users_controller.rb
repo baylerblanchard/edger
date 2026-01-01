@@ -16,7 +16,6 @@ class UsersController < ApplicationController
           reviewer: { only: [:id, :email] }
         }
       }
-      }
     }, methods: [:average_rating, :total_earnings, :profile_picture_url]
   end
 
