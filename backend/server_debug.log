@@ -366,3 +366,489 @@ Processing by ServiceRequestsController#index as */*
 Completed 200 OK in 10ms (Views: 7.7ms | ActiveRecord: 0.5ms (4 queries, 0 cached) | GC: 0.0ms)
 
 
+Started POST "/auth/signup" for ::1 at 2026-01-01 22:52:06 -0600
+Processing by AuthenticationController#signup as */*
+  Parameters: {"email" => "[FILTERED]", "password" => "[FILTERED]", "role" => "homeowner", "authentication" => {"email" => "[FILTERED]", "password" => "[FILTERED]", "role" => "homeowner"}}
+[31mUnpermitted parameter: :authentication. Context: { controller: AuthenticationController, action: signup, request: #<ActionDispatch::Request:0x0000028abaa8c270>, params: {"email" => "[FILTERED]", "password" => "[FILTERED]", "role" => "homeowner", "controller" => "authentication", "action" => "signup", "authentication" => {"email" => "[FILTERED]", "password" => "[FILTERED]", "role" => "homeowner"}} }[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='signup',application='Backend',controller='authentication'*/[0m
+  ↳ app/controllers/authentication_controller.rb:17:in 'AuthenticationController#signup'
+  [1m[36mUser Exists? (2.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = 'test_homeowner_1767329310554@example.com' LIMIT 1 /*action='signup',application='Backend',controller='authentication'*/[0m
+  ↳ app/controllers/authentication_controller.rb:17:in 'AuthenticationController#signup'
+  [1m[36mUser Create (0.2ms)[0m  [1m[32mINSERT INTO "users" ("email", "password_digest", "role", "created_at", "updated_at") VALUES ('test_homeowner_1767329310554@example.com', '$2a$12$uQ4DV97o9jTOHVV4E3GNTuAPgxoiJ2xdSnkiYnt4LX0LVaRB20jeW', 'homeowner', '2026-01-02 04:52:06.504579', '2026-01-02 04:52:06.504579') RETURNING "id" /*action='signup',application='Backend',controller='authentication'*/[0m
+  ↳ app/controllers/authentication_controller.rb:17:in 'AuthenticationController#signup'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='signup',application='Backend',controller='authentication'*/[0m
+  ↳ app/controllers/authentication_controller.rb:17:in 'AuthenticationController#signup'
+Completed 201 Created in 181ms (Views: 0.1ms | ActiveRecord: 2.9ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/service_requests" for ::1 at 2026-01-01 22:52:39 -0600
+Processing by ServiceRequestsController#create as */*
+  Parameters: {"service_request" => {"service_type" => "mowing", "address" => "123 Test St", "scheduled_date" => "2026-01-01", "status" => "pending", "price" => "45"}}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 19 LIMIT 1 /*action='create',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='create',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:32:in 'ServiceRequestsController#create'
+  [1m[36mServiceRequest Create (1.7ms)[0m  [1m[32mINSERT INTO "service_requests" ("user_id", "service_type", "status", "address", "scheduled_date", "created_at", "updated_at", "provider_id", "price") VALUES (19, 'mowing', 'pending', '123 Test St', '2026-01-01', '2026-01-02 04:52:39.108531', '2026-01-02 04:52:39.108531', NULL, 45.0) RETURNING "id" /*action='create',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:32:in 'ServiceRequestsController#create'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='create',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:32:in 'ServiceRequestsController#create'
+Completed 201 Created in 10ms (Views: 0.5ms | ActiveRecord: 2.0ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/service_requests?user_id=19" for ::1 at 2026-01-01 22:52:48 -0600
+Processing by ServiceRequestsController#index as */*
+  Parameters: {"user_id" => "19"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 19 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mServiceRequest Load (0.1ms)[0m  [1m[34mSELECT "service_requests".* FROM "service_requests" WHERE "service_requests"."user_id" = 19 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.7ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 22 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+Completed 200 OK in 9ms (Views: 5.5ms | ActiveRecord: 0.9ms (3 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/service_requests?user_id=19" for ::1 at 2026-01-01 22:52:48 -0600
+Processing by ServiceRequestsController#index as */*
+  Parameters: {"user_id" => "19"}
+  [1m[36mUser Load (0.6ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 19 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mServiceRequest Load (0.2ms)[0m  [1m[34mSELECT "service_requests".* FROM "service_requests" WHERE "service_requests"."user_id" = 19 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 22 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+Completed 200 OK in 13ms (Views: 8.4ms | ActiveRecord: 0.9ms (3 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/auth/login" for ::1 at 2026-01-01 22:57:52 -0600
+Processing by AuthenticationController#login as */*
+  Parameters: {"email" => "[FILTERED]", "password" => "[FILTERED]", "authentication" => {"email" => "[FILTERED]", "password" => "[FILTERED]"}}
+  [1m[36mUser Load (6.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'provider@test.com' LIMIT 1 /*action='login',application='Backend',controller='authentication'*/[0m
+  ↳ app/controllers/authentication_controller.rb:4:in 'AuthenticationController#login'
+Completed 200 OK in 213ms (Views: 0.3ms | ActiveRecord: 6.2ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/service_requests?user_id=15" for ::1 at 2026-01-01 22:57:58 -0600
+Processing by ServiceRequestsController#index as */*
+  Parameters: {"user_id" => "15"}
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mServiceRequest Load (0.1ms)[0m  [1m[34mSELECT "service_requests".* FROM "service_requests" WHERE "service_requests"."user_id" = 15 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+Completed 200 OK in 5ms (Views: 1.4ms | ActiveRecord: 0.5ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/service_requests?user_id=15" for ::1 at 2026-01-01 22:57:58 -0600
+Processing by ServiceRequestsController#index as */*
+  Parameters: {"user_id" => "15"}
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mServiceRequest Load (0.2ms)[0m  [1m[34mSELECT "service_requests".* FROM "service_requests" WHERE "service_requests"."user_id" = 15 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+Completed 200 OK in 7ms (Views: 1.5ms | ActiveRecord: 0.6ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/service_requests" for ::1 at 2026-01-01 23:00:51 -0600
+Processing by ServiceRequestsController#index as */*
+Completed 500 Internal Server Error in 0ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+NoMethodError (undefined method '[]' for nil):
+  
+app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+Started GET "/service_requests?user_id=15" for ::1 at 2026-01-01 23:00:57 -0600
+Processing by ServiceRequestsController#index as */*
+  Parameters: {"user_id" => "15"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mServiceRequest Load (0.1ms)[0m  [1m[34mSELECT "service_requests".* FROM "service_requests" WHERE "service_requests"."user_id" = 15 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+Completed 200 OK in 3ms (Views: 1.3ms | ActiveRecord: 0.3ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/service_requests?user_id=15" for ::1 at 2026-01-01 23:00:57 -0600
+Processing by ServiceRequestsController#index as */*
+  Parameters: {"user_id" => "15"}
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mServiceRequest Load (0.1ms)[0m  [1m[34mSELECT "service_requests".* FROM "service_requests" WHERE "service_requests"."user_id" = 15 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+Completed 200 OK in 4ms (Views: 1.4ms | ActiveRecord: 0.4ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/auth/login" for ::1 at 2026-01-01 23:02:02 -0600
+Processing by AuthenticationController#login as */*
+  Parameters: {"email" => "[FILTERED]", "password" => "[FILTERED]", "authentication" => {"email" => "[FILTERED]", "password" => "[FILTERED]"}}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'test_homeowner_1767329310554@example.com' LIMIT 1 /*action='login',application='Backend',controller='authentication'*/[0m
+  ↳ app/controllers/authentication_controller.rb:4:in 'AuthenticationController#login'
+Completed 200 OK in 220ms (Views: 0.2ms | ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/auth/login" for ::1 at 2026-01-01 23:02:54 -0600
+Processing by AuthenticationController#login as */*
+  Parameters: {"email" => "[FILTERED]", "password" => "[FILTERED]", "authentication" => {"email" => "[FILTERED]", "password" => "[FILTERED]"}}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'test_homeowner_1767329310554@example.com' LIMIT 1 /*action='login',application='Backend',controller='authentication'*/[0m
+  ↳ app/controllers/authentication_controller.rb:4:in 'AuthenticationController#login'
+Completed 200 OK in 213ms (Views: 0.2ms | ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/auth/signup" for ::1 at 2026-01-01 23:03:52 -0600
+Processing by AuthenticationController#signup as */*
+  Parameters: {"email" => "[FILTERED]", "password" => "[FILTERED]", "role" => "homeowner", "authentication" => {"email" => "[FILTERED]", "password" => "[FILTERED]", "role" => "homeowner"}}
+[31mUnpermitted parameter: :authentication. Context: { controller: AuthenticationController, action: signup, request: #<ActionDispatch::Request:0x0000028aba48a520>, params: {"email" => "[FILTERED]", "password" => "[FILTERED]", "role" => "homeowner", "controller" => "authentication", "action" => "signup", "authentication" => {"email" => "[FILTERED]", "password" => "[FILTERED]", "role" => "homeowner"}} }[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='signup',application='Backend',controller='authentication'*/[0m
+  ↳ app/controllers/authentication_controller.rb:17:in 'AuthenticationController#signup'
+  [1m[36mUser Exists? (2.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = 'h@t.com' LIMIT 1 /*action='signup',application='Backend',controller='authentication'*/[0m
+  ↳ app/controllers/authentication_controller.rb:17:in 'AuthenticationController#signup'
+  [1m[36mUser Create (0.7ms)[0m  [1m[32mINSERT INTO "users" ("email", "password_digest", "role", "created_at", "updated_at") VALUES ('h@t.com', '$2a$12$/fQUSTAKDU6fvXqnJL9jSOaBinfMdhlSEy6zUt1rJCvI1mRmaLfuu', 'homeowner', '2026-01-02 05:03:53.057094', '2026-01-02 05:03:53.057094') RETURNING "id" /*action='signup',application='Backend',controller='authentication'*/[0m
+  ↳ app/controllers/authentication_controller.rb:17:in 'AuthenticationController#signup'
+  [1m[36mTRANSACTION (1.9ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='signup',application='Backend',controller='authentication'*/[0m
+  ↳ app/controllers/authentication_controller.rb:17:in 'AuthenticationController#signup'
+Completed 201 Created in 228ms (Views: 0.2ms | ActiveRecord: 5.3ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/service_requests" for ::1 at 2026-01-01 23:08:07 -0600
+Processing by ServiceRequestsController#create as */*
+  Parameters: {"service_request" => {"service_type" => "mowing", "address" => "", "scheduled_date" => "", "status" => "pending", "price" => "45"}}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 20 LIMIT 1 /*action='create',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='create',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:32:in 'ServiceRequestsController#create'
+  [1m[36mServiceRequest Create (1.6ms)[0m  [1m[32mINSERT INTO "service_requests" ("user_id", "service_type", "status", "address", "scheduled_date", "created_at", "updated_at", "provider_id", "price") VALUES (20, 'mowing', 'pending', '', NULL, '2026-01-02 05:08:07.612674', '2026-01-02 05:08:07.612674', NULL, 45.0) RETURNING "id" /*action='create',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:32:in 'ServiceRequestsController#create'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='create',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:32:in 'ServiceRequestsController#create'
+Completed 201 Created in 8ms (Views: 0.5ms | ActiveRecord: 1.9ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/service_requests?user_id=20" for ::1 at 2026-01-01 23:08:16 -0600
+Processing by ServiceRequestsController#index as */*
+  Parameters: {"user_id" => "20"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 20 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mServiceRequest Load (0.2ms)[0m  [1m[34mSELECT "service_requests".* FROM "service_requests" WHERE "service_requests"."user_id" = 20 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.7ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 23 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+Completed 200 OK in 7ms (Views: 4.0ms | ActiveRecord: 1.0ms (3 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/service_requests?user_id=20" for ::1 at 2026-01-01 23:08:16 -0600
+Processing by ServiceRequestsController#index as */*
+  Parameters: {"user_id" => "20"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 20 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mServiceRequest Load (0.1ms)[0m  [1m[34mSELECT "service_requests".* FROM "service_requests" WHERE "service_requests"."user_id" = 20 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 23 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+Completed 200 OK in 5ms (Views: 3.2ms | ActiveRecord: 0.3ms (3 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/auth/login" for 127.0.0.1 at 2026-01-01 23:09:14 -0600
+Processing by AuthenticationController#login as */*
+  Parameters: {"email" => "[FILTERED]", "password" => "[FILTERED]", "authentication" => {"email" => "[FILTERED]", "password" => "[FILTERED]"}}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'baylerblanchard@gmail.com' LIMIT 1 /*action='login',application='Backend',controller='authentication'*/[0m
+  ↳ app/controllers/authentication_controller.rb:4:in 'AuthenticationController#login'
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/auth/login" for ::1 at 2026-01-01 23:09:16 -0600
+Processing by AuthenticationController#login as */*
+  Parameters: {"email" => "[FILTERED]", "password" => "[FILTERED]", "authentication" => {"email" => "[FILTERED]", "password" => "[FILTERED]"}}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'provider@test.com' LIMIT 1 /*action='login',application='Backend',controller='authentication'*/[0m
+  ↳ app/controllers/authentication_controller.rb:4:in 'AuthenticationController#login'
+Completed 200 OK in 188ms (Views: 0.1ms | ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/service_requests?user_id=15" for ::1 at 2026-01-01 23:09:24 -0600
+Processing by ServiceRequestsController#index as */*
+  Parameters: {"user_id" => "15"}
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mServiceRequest Load (0.1ms)[0m  [1m[34mSELECT "service_requests".* FROM "service_requests" WHERE "service_requests"."user_id" = 15 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+Completed 200 OK in 4ms (Views: 1.4ms | ActiveRecord: 0.4ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/service_requests?user_id=15" for ::1 at 2026-01-01 23:09:24 -0600
+Processing by ServiceRequestsController#index as */*
+  Parameters: {"user_id" => "15"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mServiceRequest Load (0.1ms)[0m  [1m[34mSELECT "service_requests".* FROM "service_requests" WHERE "service_requests"."user_id" = 15 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+Completed 200 OK in 3ms (Views: 1.5ms | ActiveRecord: 0.3ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/service_requests?status=pending" for ::1 at 2026-01-01 23:09:32 -0600
+Started GET "/users/15" for ::1 at 2026-01-01 23:09:32 -0600
+Processing by ServiceRequestsController#index as */*
+  Parameters: {"status" => "pending"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mServiceRequest Load (0.1ms)[0m  [1m[34mSELECT "service_requests".* FROM "service_requests" WHERE "service_requests"."status" = 'pending' /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 19 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 22 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+Processing by UsersController#show as */*
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 23 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  Parameters: {"id" => "15"}
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mUser Load (24.5ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+Completed 200 OK in 36ms (Views: 33.0ms | ActiveRecord: 0.6ms (5 queries, 0 cached) | GC: 0.0ms)
+
+
+  ↳ app/controllers/users_controller.rb:50:in 'UsersController#set_user'
+  [1m[36mReview Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "reviews" WHERE "reviews"."provider_id" = 15 LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:12:in 'User#average_rating'
+  [1m[36mServiceRequest Sum (0.3ms)[0m  [1m[34mSELECT SUM("service_requests"."price") FROM "service_requests" WHERE "service_requests"."provider_id" = 15 AND "service_requests"."status" = 'completed' /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:18:in 'User#total_earnings'
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = 15 AND "active_storage_attachments"."record_type" = 'User' AND "active_storage_attachments"."name" = 'profile_picture' LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:22:in 'User#profile_picture_url'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."provider_id" = 15 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/controllers/users_controller.rb:13:in 'UsersController#show'
+Completed 200 OK in 36ms (Views: 7.2ms | ActiveRecord: 25.5ms (5 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/service_requests?status=pending" for ::1 at 2026-01-01 23:09:32 -0600
+Started GET "/users/15" for ::1 at 2026-01-01 23:09:32 -0600
+Processing by ServiceRequestsController#index as */*
+  Parameters: {"status" => "pending"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mServiceRequest Load (0.2ms)[0m  [1m[34mSELECT "service_requests".* FROM "service_requests" WHERE "service_requests"."status" = 'pending' /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.2ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 19 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 22 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 23 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+Completed 200 OK in 22ms (Views: 15.0ms | ActiveRecord: 0.7ms (5 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/service_requests?provider_id=15" for ::1 at 2026-01-01 23:09:32 -0600
+Processing by UsersController#show as */*
+  Parameters: {"id" => "15"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/controllers/users_controller.rb:50:in 'UsersController#set_user'
+  [1m[36mReview Exists? (1.1ms)[0m  [1m[34mSELECT 1 AS one FROM "reviews" WHERE "reviews"."provider_id" = 15 LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:12:in 'User#average_rating'
+  [1m[36mServiceRequest Sum (0.1ms)[0m  [1m[34mSELECT SUM("service_requests"."price") FROM "service_requests" WHERE "service_requests"."provider_id" = 15 AND "service_requests"."status" = 'completed' /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:18:in 'User#total_earnings'
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = 15 AND "active_storage_attachments"."record_type" = 'User' AND "active_storage_attachments"."name" = 'profile_picture' LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:22:in 'User#profile_picture_url'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."provider_id" = 15 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/controllers/users_controller.rb:13:in 'UsersController#show'
+Completed 200 OK in 22ms (Views: 18.0ms | ActiveRecord: 1.6ms (5 queries, 0 cached) | GC: 0.0ms)
+
+
+Processing by ServiceRequestsController#index as */*
+  Parameters: {"provider_id" => "15"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mServiceRequest Load (0.1ms)[0m  [1m[34mSELECT "service_requests".* FROM "service_requests" WHERE "service_requests"."provider_id" = 15 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 20 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 21 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+Completed 200 OK in 6ms (Views: 4.2ms | ActiveRecord: 0.4ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/service_requests?provider_id=15" for ::1 at 2026-01-01 23:09:32 -0600
+Processing by ServiceRequestsController#index as */*
+  Parameters: {"provider_id" => "15"}
+  [1m[36mUser Load (1.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mServiceRequest Load (0.1ms)[0m  [1m[34mSELECT "service_requests".* FROM "service_requests" WHERE "service_requests"."provider_id" = 15 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 20 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 21 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+Completed 200 OK in 9ms (Views: 5.6ms | ActiveRecord: 1.7ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started PATCH "/service_requests/22" for ::1 at 2026-01-01 23:09:51 -0600
+Processing by ServiceRequestsController#update as */*
+  Parameters: {"service_request" => {"status" => "accepted"}, "id" => "22"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='update',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mServiceRequest Load (0.1ms)[0m  [1m[34mSELECT "service_requests".* FROM "service_requests" WHERE "service_requests"."id" = 22 LIMIT 1 /*action='update',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:64:in 'ServiceRequestsController#set_service_request'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='update',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:49:in 'ServiceRequestsController#update'
+  [1m[36mServiceRequest Update (1.4ms)[0m  [1m[33mUPDATE "service_requests" SET "status" = 'accepted', "updated_at" = '2026-01-02 05:09:51.152496', "provider_id" = 15 WHERE "service_requests"."id" = 22 /*action='update',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:49:in 'ServiceRequestsController#update'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='update',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:49:in 'ServiceRequestsController#update'
+Completed 200 OK in 9ms (Views: 0.2ms | ActiveRecord: 1.8ms (3 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/service_requests?status=pending" for ::1 at 2026-01-01 23:09:51 -0600
+Started GET "/users/15" for ::1 at 2026-01-01 23:09:51 -0600
+Processing by ServiceRequestsController#index as */*
+  Parameters: {"status" => "pending"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mServiceRequest Load (0.1ms)[0m  [1m[34mSELECT "service_requests".* FROM "service_requests" WHERE "service_requests"."status" = 'pending' /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 19 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 23 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+Processing by UsersController#show as */*
+Completed 200 OK in 9ms (Views: 6.5ms | ActiveRecord: 0.5ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+  Parameters: {"id" => "15"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/controllers/users_controller.rb:50:in 'UsersController#set_user'
+  [1m[36mReview Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "reviews" WHERE "reviews"."provider_id" = 15 LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:12:in 'User#average_rating'
+  [1m[36mServiceRequest Sum (0.1ms)[0m  [1m[34mSELECT SUM("service_requests"."price") FROM "service_requests" WHERE "service_requests"."provider_id" = 15 AND "service_requests"."status" = 'completed' /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:18:in 'User#total_earnings'
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = 15 AND "active_storage_attachments"."record_type" = 'User' AND "active_storage_attachments"."name" = 'profile_picture' LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:22:in 'User#profile_picture_url'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."provider_id" = 15 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/controllers/users_controller.rb:13:in 'UsersController#show'
+Completed 200 OK in 9ms (Views: 6.4ms | ActiveRecord: 0.3ms (5 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/service_requests?provider_id=15" for ::1 at 2026-01-01 23:09:51 -0600
+Processing by ServiceRequestsController#index as */*
+  Parameters: {"provider_id" => "15"}
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mServiceRequest Load (0.2ms)[0m  [1m[34mSELECT "service_requests".* FROM "service_requests" WHERE "service_requests"."provider_id" = 15 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 20 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 21 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 22 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+Completed 200 OK in 8ms (Views: 5.3ms | ActiveRecord: 0.7ms (5 queries, 0 cached) | GC: 0.0ms)
+
+
+Started PATCH "/service_requests/22" for ::1 at 2026-01-01 23:10:10 -0600
+Processing by ServiceRequestsController#update as */*
+  Parameters: {"service_request" => {"status" => "completed"}, "id" => "22"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='update',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mServiceRequest Load (0.1ms)[0m  [1m[34mSELECT "service_requests".* FROM "service_requests" WHERE "service_requests"."id" = 22 LIMIT 1 /*action='update',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:64:in 'ServiceRequestsController#set_service_request'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='update',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:49:in 'ServiceRequestsController#update'
+  [1m[36mServiceRequest Update (1.0ms)[0m  [1m[33mUPDATE "service_requests" SET "status" = 'completed', "updated_at" = '2026-01-02 05:10:10.656365' WHERE "service_requests"."id" = 22 /*action='update',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:49:in 'ServiceRequestsController#update'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='update',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:49:in 'ServiceRequestsController#update'
+Completed 200 OK in 7ms (Views: 0.2ms | ActiveRecord: 1.4ms (3 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/service_requests?status=pending" for ::1 at 2026-01-01 23:10:10 -0600
+Started GET "/users/15" for ::1 at 2026-01-01 23:10:10 -0600
+Processing by ServiceRequestsController#index as */*
+  Parameters: {"status" => "pending"}
+  [1m[36mUser Load (0.9ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mServiceRequest Load (0.1ms)[0m  [1m[34mSELECT "service_requests".* FROM "service_requests" WHERE "service_requests"."status" = 'pending' /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 19 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 23 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+Processing by UsersController#show as */*
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  Parameters: {"id" => "15"}
+Completed 200 OK in 11ms (Views: 7.0ms | ActiveRecord: 1.2ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/controllers/users_controller.rb:50:in 'UsersController#set_user'
+  [1m[36mReview Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "reviews" WHERE "reviews"."provider_id" = 15 LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:12:in 'User#average_rating'
+  [1m[36mServiceRequest Sum (0.1ms)[0m  [1m[34mSELECT SUM("service_requests"."price") FROM "service_requests" WHERE "service_requests"."provider_id" = 15 AND "service_requests"."status" = 'completed' /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:18:in 'User#total_earnings'
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = 15 AND "active_storage_attachments"."record_type" = 'User' AND "active_storage_attachments"."name" = 'profile_picture' LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:22:in 'User#profile_picture_url'
+  [1m[36mReview Load (1.0ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."provider_id" = 15 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/controllers/users_controller.rb:13:in 'UsersController#show'
+Completed 200 OK in 9ms (Views: 6.6ms | ActiveRecord: 1.3ms (5 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/service_requests?provider_id=15" for ::1 at 2026-01-01 23:10:10 -0600
+Processing by ServiceRequestsController#index as */*
+  Parameters: {"provider_id" => "15"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/application_controller.rb:7:in 'ApplicationController#authorize_request'
+  [1m[36mServiceRequest Load (0.1ms)[0m  [1m[34mSELECT "service_requests".* FROM "service_requests" WHERE "service_requests"."provider_id" = 15 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 20 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 21 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."service_request_id" = 22 LIMIT 1 /*action='index',application='Backend',controller='service_requests'*/[0m
+  ↳ app/controllers/service_requests_controller.rb:20:in 'ServiceRequestsController#index'
+Completed 200 OK in 10ms (Views: 6.8ms | ActiveRecord: 0.6ms (5 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/auth/signup" for 127.0.0.1 at 2026-01-01 23:12:37 -0600
+Processing by AuthenticationController#signup as */*
+  Parameters: {"email" => "[FILTERED]", "password" => "[FILTERED]", "role" => "homeowner", "authentication" => {"email" => "[FILTERED]", "password" => "[FILTERED]", "role" => "homeowner"}}
+[31mUnpermitted parameter: :authentication. Context: { controller: AuthenticationController, action: signup, request: #<ActionDispatch::Request:0x0000028aba182b20>, params: {"email" => "[FILTERED]", "password" => "[FILTERED]", "role" => "homeowner", "controller" => "authentication", "action" => "signup", "authentication" => {"email" => "[FILTERED]", "password" => "[FILTERED]", "role" => "homeowner"}} }[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='signup',application='Backend',controller='authentication'*/[0m
+  ↳ app/controllers/authentication_controller.rb:17:in 'AuthenticationController#signup'
+  [1m[36mUser Exists? (2.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = 'baylerblanchard@gmail.com' LIMIT 1 /*action='signup',application='Backend',controller='authentication'*/[0m
+  ↳ app/controllers/authentication_controller.rb:17:in 'AuthenticationController#signup'
+  [1m[36mUser Create (0.2ms)[0m  [1m[32mINSERT INTO "users" ("email", "password_digest", "role", "created_at", "updated_at") VALUES ('baylerblanchard@gmail.com', '$2a$12$JzRsqr3McQfiHwhmDIA.OuSdj2SjsHxY06JqWG4wnNgErYecvY712', 'homeowner', '2026-01-02 05:12:37.940913', '2026-01-02 05:12:37.940913') RETURNING "id" /*action='signup',application='Backend',controller='authentication'*/[0m
+  ↳ app/controllers/authentication_controller.rb:17:in 'AuthenticationController#signup'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='signup',application='Backend',controller='authentication'*/[0m
+  ↳ app/controllers/authentication_controller.rb:17:in 'AuthenticationController#signup'
+Completed 201 Created in 190ms (Views: 0.1ms | ActiveRecord: 2.6ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/auth/login" for 127.0.0.1 at 2026-01-01 23:12:57 -0600
+Processing by AuthenticationController#login as */*
+  Parameters: {"email" => "[FILTERED]", "password" => "[FILTERED]", "authentication" => {"email" => "[FILTERED]", "password" => "[FILTERED]"}}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'baylerblanchard@gmail.com' LIMIT 1 /*action='login',application='Backend',controller='authentication'*/[0m
+  ↳ app/controllers/authentication_controller.rb:4:in 'AuthenticationController#login'
+Completed 200 OK in 178ms (Views: 0.1ms | ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/users/15" for ::1 at 2026-01-01 23:14:09 -0600
+Processing by UsersController#show as */*
+  Parameters: {"id" => "15"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/controllers/users_controller.rb:50:in 'UsersController#set_user'
+  [1m[36mReview Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "reviews" WHERE "reviews"."provider_id" = 15 LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:12:in 'User#average_rating'
+  [1m[36mServiceRequest Sum (0.1ms)[0m  [1m[34mSELECT SUM("service_requests"."price") FROM "service_requests" WHERE "service_requests"."provider_id" = 15 AND "service_requests"."status" = 'completed' /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:18:in 'User#total_earnings'
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = 15 AND "active_storage_attachments"."record_type" = 'User' AND "active_storage_attachments"."name" = 'profile_picture' LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:22:in 'User#profile_picture_url'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."provider_id" = 15 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/controllers/users_controller.rb:13:in 'UsersController#show'
+Completed 200 OK in 7ms (Views: 5.6ms | ActiveRecord: 0.5ms (5 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/users/15" for ::1 at 2026-01-01 23:14:09 -0600
+Processing by UsersController#show as */*
+  Parameters: {"id" => "15"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 15 LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/controllers/users_controller.rb:50:in 'UsersController#set_user'
+  [1m[36mReview Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "reviews" WHERE "reviews"."provider_id" = 15 LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:12:in 'User#average_rating'
+  [1m[36mServiceRequest Sum (0.1ms)[0m  [1m[34mSELECT SUM("service_requests"."price") FROM "service_requests" WHERE "service_requests"."provider_id" = 15 AND "service_requests"."status" = 'completed' /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:18:in 'User#total_earnings'
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = 15 AND "active_storage_attachments"."record_type" = 'User' AND "active_storage_attachments"."name" = 'profile_picture' LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:22:in 'User#profile_picture_url'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."provider_id" = 15 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/controllers/users_controller.rb:13:in 'UsersController#show'
+Completed 200 OK in 8ms (Views: 6.1ms | ActiveRecord: 0.5ms (5 queries, 0 cached) | GC: 0.0ms)
+
+
