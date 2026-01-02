@@ -20,6 +20,6 @@ class User < ApplicationRecord
 
   def profile_picture_url
     return nil unless profile_picture.attached?
-    Rails.application.routes.url_helpers.url_for(profile_picture)
+    Rails.application.routes.url_helpers.rails_blob_url(profile_picture, host: "http://localhost:3001")
   end
 end

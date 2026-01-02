@@ -1,0 +1,59 @@
+
+(process:35420): VIPS-WARNING **: 22:03:51.056: unable to load "C:\Ruby34-x64\msys64\ucrt64/lib/vips-modules-8.17\vips-heif.dll" -- 'C:\Ruby34-x64\msys64\ucrt64/lib/vips-modules-8.17\vips-heif.dll': The specified module could not be found.
+
+(process:35420): VIPS-WARNING **: 22:03:51.075: unable to load "C:\Ruby34-x64\msys64\ucrt64/lib/vips-modules-8.17\vips-jxl.dll" -- 'C:\Ruby34-x64\msys64\ucrt64/lib/vips-modules-8.17\vips-jxl.dll': The specified module could not be found.
+
+(process:35420): VIPS-WARNING **: 22:03:51.094: unable to load "C:\Ruby34-x64\msys64\ucrt64/lib/vips-modules-8.17\vips-magick.dll" -- 'C:\Ruby34-x64\msys64\ucrt64/lib/vips-modules-8.17\vips-magick.dll': The specified module could not be found.
+
+(process:35420): VIPS-WARNING **: 22:03:51.112: unable to load "C:\Ruby34-x64\msys64\ucrt64/lib/vips-modules-8.17\vips-openslide.dll" -- 'C:\Ruby34-x64\msys64\ucrt64/lib/vips-modules-8.17\vips-openslide.dll': The specified module could not be found.
+
+(process:35420): VIPS-WARNING **: 22:03:51.131: unable to load "C:\Ruby34-x64\msys64\ucrt64/lib/vips-modules-8.17\vips-poppler.dll" -- 'C:\Ruby34-x64\msys64\ucrt64/lib/vips-modules-8.17\vips-poppler.dll': The specified module could not be found.
+=> Booting Puma
+=> Rails 8.1.1 application starting in development 
+=> Run `bin/rails server --help` for more startup options
+*** SIGUSR2 not implemented, signal based restart unavailable!
+*** SIGUSR1 not implemented, signal based restart unavailable!
+*** SIGHUP not implemented, signal based logs reopening unavailable!
+Puma starting in single mode...
+* Puma version: 7.1.0 ("Neon Witch")
+* Ruby version: ruby 3.4.7 (2025-10-08 revision 7a5688e2a2) +PRISM [x64-mingw-ucrt]
+*  Min threads: 3
+*  Max threads: 3
+*  Environment: development
+*          PID: 35420
+* Listening on http://[::1]:3001
+* Listening on http://127.0.0.1:3001
+Use Ctrl-C to stop
+Started GET "/users/17" for ::1 at 2026-01-01 22:08:28 -0600
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backend'*/[0m
+Processing by UsersController#show as HTML
+  Parameters: {"id" => "17"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 17 LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/controllers/users_controller.rb:50:in 'UsersController#set_user'
+  [1m[36mReview Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "reviews" WHERE "reviews"."provider_id" = 17 LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:12:in 'User#average_rating'
+  [1m[36mServiceRequest Sum (0.1ms)[0m  [1m[34mSELECT SUM("service_requests"."price") FROM "service_requests" WHERE "service_requests"."provider_id" = 17 AND "service_requests"."status" = 'completed' /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:18:in 'User#total_earnings'
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = 17 AND "active_storage_attachments"."record_type" = 'User' AND "active_storage_attachments"."name" = 'profile_picture' LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:22:in 'User#profile_picture_url'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."provider_id" = 17 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/controllers/users_controller.rb:13:in 'UsersController#show'
+Completed 200 OK in 602ms (Views: 187.6ms | ActiveRecord: 4.8ms (5 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/users/17" for ::1 at 2026-01-01 22:08:41 -0600
+Processing by UsersController#show as HTML
+  Parameters: {"id" => "17"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 17 LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/controllers/users_controller.rb:50:in 'UsersController#set_user'
+  [1m[36mReview Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "reviews" WHERE "reviews"."provider_id" = 17 LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:12:in 'User#average_rating'
+  [1m[36mServiceRequest Sum (0.1ms)[0m  [1m[34mSELECT SUM("service_requests"."price") FROM "service_requests" WHERE "service_requests"."provider_id" = 17 AND "service_requests"."status" = 'completed' /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:18:in 'User#total_earnings'
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = 17 AND "active_storage_attachments"."record_type" = 'User' AND "active_storage_attachments"."name" = 'profile_picture' LIMIT 1 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/models/user.rb:22:in 'User#profile_picture_url'
+  [1m[36mReview Load (0.1ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."provider_id" = 17 /*action='show',application='Backend',controller='users'*/[0m
+  ↳ app/controllers/users_controller.rb:13:in 'UsersController#show'
+Completed 200 OK in 7ms (Views: 4.7ms | ActiveRecord: 0.4ms (5 queries, 0 cached) | GC: 0.0ms)
+
+
