@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Calendar, Clock, CheckCircle2, Leaf, Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ReviewDialog } from "@/components/review-dialog";
+import { PaymentModal } from "@/components/payment-modal";
+import { CreditCard } from "lucide-react";
 
 interface Request {
     id: number;
@@ -21,6 +23,7 @@ interface Request {
         rating: number;
     };
     price?: string;
+    payment_status?: 'pending' | 'paid';
 }
 
 // Helper to decode JWT to get user ID
@@ -36,6 +39,42 @@ export default function DashboardPage() {
     const router = useRouter();
     const [requests, setRequests] = useState<Request[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [clientSecret, setClientSecret] = useState<string | null>(null);
+    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+
+    const handlePay = async (request: Request) => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+        try {
+            const res = await fetch(`${apiUrl}/payments`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ service_request_id: request.id })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                setClientSecret(data.clientSecret);
+                setIsPaymentModalOpen(true);
+            } else {
+                console.error("Failed to initiate payment");
+            }
+        } catch (err) {
+            console.error("Error initiating payment:", err);
+        }
+    };
+
+    const handlePaymentSuccess = () => {
+        setIsPaymentModalOpen(false);
+        setClientSecret(null);
+        // Refresh requests to show paid status
+        window.location.reload();
+    };
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -122,7 +161,12 @@ export default function DashboardPage() {
                                             </div>
                                             <div className="text-right">
                                                 <div className="text-lg font-bold mb-1">${req.price || 45}</div>
-                                                {getStatusBadge(req.status)}
+                                                <div className="flex flex-col items-end gap-1">
+                                                    {getStatusBadge(req.status)}
+                                                    {req.payment_status === 'paid' && (
+                                                        <Badge variant="outline" className="text-green-600 border-green-600">Paid</Badge>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     </CardHeader>
@@ -155,6 +199,13 @@ export default function DashboardPage() {
                                                 </span>
                                             </div>
                                         )}
+                                        {req.status === 'completed' && req.payment_status !== 'paid' && (
+                                            <div className="mt-4 flex justify-end">
+                                                <Button onClick={() => handlePay(req)} className="gap-2">
+                                                    <CreditCard className="h-4 w-4" /> Pay Now
+                                                </Button>
+                                            </div>
+                                        )}
                                     </CardContent>
                                 </Card>
                             ))
@@ -171,6 +222,13 @@ export default function DashboardPage() {
                 )
                 }
             </main >
+
+            <PaymentModal
+                open={isPaymentModalOpen}
+                onOpenChange={setIsPaymentModalOpen}
+                clientSecret={clientSecret}
+                onSuccess={handlePaymentSuccess}
+            />
         </div >
     );
 }

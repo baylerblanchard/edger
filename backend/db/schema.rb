@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_29_195000) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_03_014223) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -55,11 +55,13 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_29_195000) do
   create_table "service_requests", force: :cascade do |t|
     t.string "address"
     t.datetime "created_at", null: false
+    t.integer "payment_status"
     t.decimal "price", precision: 10, scale: 2
     t.integer "provider_id"
     t.date "scheduled_date"
     t.string "service_type"
     t.string "status"
+    t.string "stripe_payment_intent_id"
     t.datetime "updated_at", null: false
     t.integer "user_id"
   end

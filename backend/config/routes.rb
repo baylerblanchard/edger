@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   post '/auth/signup', to: 'authentication#signup'
   resources :service_requests
   resources :reviews, only: [:create]
+  resources :payments, only: [:create]
   resources :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
