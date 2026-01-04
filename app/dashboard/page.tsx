@@ -9,7 +9,8 @@ import { MapPin, Calendar, Clock, CheckCircle2, Leaf, Star } from "lucide-react"
 import { useRouter } from "next/navigation";
 import { ReviewDialog } from "@/components/review-dialog";
 import { PaymentModal } from "@/components/payment-modal";
-import { CreditCard } from "lucide-react";
+import { ChatDialog } from "@/components/chat-dialog";
+import { CreditCard, MessageCircle } from "lucide-react";
 
 interface Request {
     id: number;
@@ -41,6 +42,16 @@ export default function DashboardPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [clientSecret, setClientSecret] = useState<string | null>(null);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+
+    // Chat state
+    const [isChatOpen, setIsChatOpen] = useState(false);
+    const [chatRequestId, setChatRequestId] = useState<number | null>(null);
+    const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+
+    const handleChat = (requestId: number) => {
+        setChatRequestId(requestId);
+        setIsChatOpen(true);
+    };
 
     const handlePay = async (request: Request) => {
         const token = localStorage.getItem("token");
@@ -110,6 +121,10 @@ export default function DashboardPage() {
                 console.error("Failed to fetch requests:", err);
                 setIsLoading(false);
             });
+
+        // Set current user ID
+        if (decoded?.user_id) setCurrentUserId(decoded.user_id);
+
     }, [router]);
 
     const getStatusBadge = (status: string) => {
@@ -181,31 +196,38 @@ export default function DashboardPage() {
                                                 </div>
                                             )}
                                         </div>
-                                        {req.status === 'completed' && !req.review && (
-                                            <div className="mt-4 flex justify-end">
+
+                                        {/* Actions */}
+                                        <div className="flex justify-end gap-2 mt-4">
+                                            {/* Chat Button (Visible for accepted/completed jobs) */}
+                                            {(req.status === 'accepted' || req.status === 'completed') && (
+                                                <Button size="sm" variant="secondary" onClick={() => handleChat(req.id)} className="gap-2">
+                                                    <MessageCircle className="h-4 w-4" /> Message
+                                                </Button>
+                                            )}
+
+                                            {/* Review Button */}
+                                            {req.status === 'completed' && !req.review && (
                                                 <ReviewDialog
                                                     serviceRequestId={req.id}
-                                                    onReviewSubmitted={() => {
-                                                        // Refresh requests
-                                                        window.location.reload();
-                                                    }}
+                                                    onReviewSubmitted={() => window.location.reload()}
                                                 />
-                                            </div>
-                                        )}
-                                        {req.status === 'completed' && req.review && (
-                                            <div className="mt-4 flex justify-end text-sm text-muted-foreground">
-                                                <span className="flex items-center gap-1 text-yellow-500">
-                                                    <Star className="h-4 w-4 fill-yellow-500" /> {req.review.rating} Stars
-                                                </span>
-                                            </div>
-                                        )}
-                                        {req.status === 'completed' && req.payment_status !== 'paid' && (
-                                            <div className="mt-4 flex justify-end">
-                                                <Button onClick={() => handlePay(req)} className="gap-2">
-                                                    <CreditCard className="h-4 w-4" /> Pay Now
-                                                </Button>
-                                            </div>
-                                        )}
+                                            )}
+                                            {req.status === 'completed' && req.review && (
+                                                <div className="mt-4 flex justify-end text-sm text-muted-foreground">
+                                                    <span className="flex items-center gap-1 text-yellow-500">
+                                                        <Star className="h-4 w-4 fill-yellow-500" /> {req.review.rating} Stars
+                                                    </span>
+                                                </div>
+                                            )}
+                                            {req.status === 'completed' && req.payment_status !== 'paid' && (
+                                                <div className="mt-4 flex justify-end">
+                                                    <Button onClick={() => handlePay(req)} className="gap-2">
+                                                        <CreditCard className="h-4 w-4" /> Pay Now
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        </div>
                                     </CardContent>
                                 </Card>
                             ))
@@ -228,6 +250,13 @@ export default function DashboardPage() {
                 onOpenChange={setIsPaymentModalOpen}
                 clientSecret={clientSecret}
                 onSuccess={handlePaymentSuccess}
+            />
+
+            <ChatDialog
+                open={isChatOpen}
+                onOpenChange={setIsChatOpen}
+                serviceRequestId={chatRequestId}
+                currentUserId={currentUserId}
             />
         </div >
     );

@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   resources :service_requests
   resources :reviews, only: [:create]
   resources :payments, only: [:create]
+  resources :conversations, only: [:index, :show, :create]
+  resources :messages, only: [:create]
   resources :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

@@ -8,8 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Calendar, CheckCircle2, Briefcase, Star } from "lucide-react";
+import { MapPin, Calendar, CheckCircle2, Briefcase, Star, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ChatDialog } from "@/components/chat-dialog";
 
 import { useRouter } from "next/navigation";
 
@@ -42,6 +43,15 @@ export default function ProviderDashboard() {
 
     const [reviews, setReviews] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+
+    // Chat state
+    const [isChatOpen, setIsChatOpen] = useState(false);
+    const [chatRequestId, setChatRequestId] = useState<number | null>(null);
+
+    const handleChat = (requestId: number) => {
+        setChatRequestId(requestId);
+        setIsChatOpen(true);
+    };
 
     const fetchJobs = useCallback(async () => {
         const token = localStorage.getItem("token");
@@ -151,7 +161,17 @@ export default function ProviderDashboard() {
         }
     };
 
-    const JobCard = ({ job, isMyJob, onAccept, onComplete }: { job: Job, isMyJob: boolean, onAccept: (id: number) => void, onComplete: (id: number) => void }) => (
+
+
+    interface JobCardProps {
+        job: Job;
+        isMyJob: boolean;
+        onAccept: (id: number) => void;
+        onComplete: (id: number) => void;
+        onChat: (id: number) => void;
+    }
+
+    const JobCard = ({ job, isMyJob, onAccept, onComplete, onChat }: JobCardProps) => (
         <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
             <Card className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow">
                 <CardHeader className="pb-2">
@@ -189,9 +209,14 @@ export default function ProviderDashboard() {
                                 <CheckCircle2 className="mr-2 h-4 w-4" /> Completed
                             </Button>
                         ) : (
-                            <Button className="w-full" variant="default" onClick={() => onComplete(job.id)}>
-                                Mark Complete
-                            </Button>
+                            <div className="flex gap-2 w-full">
+                                <Button className="flex-1" variant="default" onClick={() => onComplete(job.id)}>
+                                    Mark Complete
+                                </Button>
+                                <Button variant="secondary" size="icon" onClick={() => onChat(job.id)}>
+                                    <MessageCircle className="h-4 w-4" />
+                                </Button>
+                            </div>
                         )
                     ) : (
                         <Button className="w-full" onClick={() => onAccept(job.id)}>Accept Job</Button>
@@ -264,6 +289,7 @@ export default function ProviderDashboard() {
                                             isMyJob={false}
                                             onAccept={acceptJob}
                                             onComplete={completeJob}
+                                            onChat={handleChat}
                                         />
                                     </motion.div>
                                 ))}
@@ -296,6 +322,7 @@ export default function ProviderDashboard() {
                                             isMyJob={true}
                                             onAccept={acceptJob}
                                             onComplete={completeJob}
+                                            onChat={handleChat}
                                         />
                                     </motion.div>
                                 ))}
@@ -364,6 +391,13 @@ export default function ProviderDashboard() {
                     </TabsContent>
                 </Tabs>
             </main>
+
+            <ChatDialog
+                open={isChatOpen}
+                onOpenChange={setIsChatOpen}
+                serviceRequestId={chatRequestId}
+                currentUserId={userId}
+            />
         </div >
     );
 }
