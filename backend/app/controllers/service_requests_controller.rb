@@ -47,6 +47,28 @@ class ServiceRequestsController < ApplicationController
     end
 
     if @service_request.save
+      # Check if status just changed to accepted
+      if @service_request.status == 'accepted' && @service_request.saved_change_to_status?
+         Notification.create(
+           user: @service_request.user,
+           title: "Request Accepted",
+           message: "Your #{@service_request.service_type} request has been accepted by a provider.",
+           link: "/dashboard",
+           related: @service_request
+         )
+      end
+
+      # Check if status just changed to completed
+      if @service_request.status == 'completed' && @service_request.saved_change_to_status?
+         Notification.create(
+           user: @service_request.user,
+           title: "Request Completed",
+           message: "Your #{@service_request.service_type} request has been completed.",
+           link: "/dashboard",
+           related: @service_request
+         )
+      end
+
       render json: @service_request
     else
       render json: @service_request.errors, status: :unprocessable_content

@@ -6,6 +6,11 @@ Rails.application.routes.draw do
   resources :payments, only: [:create]
   resources :conversations, only: [:index, :show, :create]
   resources :messages, only: [:create]
+  resources :notifications, only: [:index] do
+    member do
+      patch :mark_read
+    end
+  end
   resources :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

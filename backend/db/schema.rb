@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_04_045010) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_05_191500) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -56,6 +56,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_045010) do
     t.index ["user_id"], name: "index_messages_on_user_id"
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "link"
+    t.text "message"
+    t.datetime "read_at"
+    t.integer "related_id"
+    t.string "related_type"
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["related_type", "related_id"], name: "index_notifications_on_related"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
   create_table "reviews", force: :cascade do |t|
     t.text "comment"
     t.datetime "created_at", null: false
@@ -96,6 +110,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_045010) do
   add_foreign_key "conversations", "service_requests"
   add_foreign_key "messages", "conversations"
   add_foreign_key "messages", "users"
+  add_foreign_key "notifications", "users"
   add_foreign_key "reviews", "service_requests"
   add_foreign_key "reviews", "users", column: "provider_id"
   add_foreign_key "reviews", "users", column: "reviewer_id"

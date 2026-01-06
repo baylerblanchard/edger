@@ -3,6 +3,7 @@ class User < ApplicationRecord
   has_many :service_requests
   has_many :provided_reviews, class_name: 'Review', foreign_key: 'provider_id'
   has_many :written_reviews, class_name: 'Review', foreign_key: 'reviewer_id'
+  has_many :notifications, dependent: :destroy
   has_one_attached :profile_picture
 
   validates :email, presence: true, uniqueness: true

@@ -17,6 +17,24 @@ class MessagesController < ApplicationController
     if @message.save
       # Touch conversation to update updated_at for sorting
       @conversation.touch
+      
+      # Determine recipient
+      recipient = if @current_user.id == service_req.user_id
+                    service_req.provider
+                  else
+                    service_req.user
+                  end
+      
+      if recipient
+        Notification.create(
+          user: recipient,
+          title: "New Message",
+          message: "You have a new message regarding your service request.",
+          link: "/dashboard", # ideally link to specific chat or request
+          related: @conversation
+        )
+      end
+
       render json: @message, status: :created
     else
       render json: @message.errors, status: :unprocessable_entity

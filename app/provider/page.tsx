@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Calendar, CheckCircle2, Briefcase, Star, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ChatDialog } from "@/components/chat-dialog";
+import { NotificationsMenu } from "@/components/notifications-menu";
 
 import { useRouter } from "next/navigation";
 
@@ -234,6 +235,7 @@ export default function ProviderDashboard() {
                         <span>Edger</span> <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">Pro</span>
                     </Link>
                     <div className="flex items-center gap-4">
+                        <NotificationsMenu />
                         <div className="text-right">
                             <div className="text-sm font-medium text-muted-foreground">My Earnings: ${earnings.toFixed(2)}</div>
                             {rating > 0 && (

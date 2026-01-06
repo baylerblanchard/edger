@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { ReviewDialog } from "@/components/review-dialog";
 import { PaymentModal } from "@/components/payment-modal";
 import { ChatDialog } from "@/components/chat-dialog";
+import { NotificationsMenu } from "@/components/notifications-menu";
 import { CreditCard, MessageCircle } from "lucide-react";
 
 interface Request {
@@ -146,6 +147,7 @@ export default function DashboardPage() {
                         <span>Edger</span>
                     </Link>
                     <div className="flex items-center gap-4">
+                        <NotificationsMenu />
                         <Link href="/request">
                             <Button size="sm">New Request</Button>
                         </Link>
