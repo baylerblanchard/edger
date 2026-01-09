@@ -43,7 +43,7 @@ export default function Home() {
               </Link>
             ) : (
               <Link href="/login">
-                <Button variant="ghost" size="sm">
+                <Button variant="outline" size="sm">
                   Log in
                 </Button>
               </Link>
