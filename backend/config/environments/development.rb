@@ -32,6 +32,16 @@ Rails.application.configure do
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
 
+  # Use Resend in development if API key is present, otherwise use letter_opener or log
+  if ENV["RESEND_API_KEY"].present?
+    config.action_mailer.delivery_method = :resend
+    config.action_mailer.resend_settings = {
+      api_key: ENV["RESEND_API_KEY"]
+    }
+  else
+    config.action_mailer.delivery_method = :test
+  end
+
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
 
