@@ -331,7 +331,7 @@ export default function ProviderDashboard() {
                             </AnimatePresence>
                         ) : (
                             <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
-                                <p>You haven't accepted any jobs yet.</p>
+                                <p>You haven&apos;t accepted any jobs yet.</p>
                             </div>
                         )}
                     </TabsContent>
@@ -379,7 +379,7 @@ export default function ProviderDashboard() {
                                                 </div>
                                             </CardHeader>
                                             <CardContent>
-                                                <p className="text-sm text-gray-600 dark:text-gray-300">"{review.comment}"</p>
+                                                <p className="text-sm text-gray-600 dark:text-gray-300">&quot;{review.comment}&quot;</p>
                                             </CardContent>
                                         </Card>
                                     </motion.div>
