@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 interface Message {
     id: number;
     content: string;
-    sender_id: number;
+    user_id: number;
     created_at: string;
     sender: {
         email: string;
@@ -149,7 +149,7 @@ export function ChatDialog({ serviceRequestId, open, onOpenChange, currentUserId
                         <div className="text-center text-sm text-muted-foreground py-10">No messages yet. Say hi!</div>
                     ) : (
                         messages.map((msg) => {
-                            const isMe = msg.sender_id === currentUserId;
+                            const isMe = msg.user_id === currentUserId;
                             return (
                                 <div key={msg.id} className={cn("flex w-full", isMe ? "justify-end" : "justify-start")}>
                                     <div className={cn(

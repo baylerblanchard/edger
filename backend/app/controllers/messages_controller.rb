@@ -35,7 +35,7 @@ class MessagesController < ApplicationController
         )
       end
 
-      render json: @message, status: :created
+      render json: @message.as_json(include: :sender), status: :created
     else
       render json: @message.errors, status: :unprocessable_entity
     end
