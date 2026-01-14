@@ -6,8 +6,14 @@ class User < ApplicationRecord
   has_many :notifications, dependent: :destroy
   has_one_attached :profile_picture
 
+  enum role: { homeowner: 'homeowner', provider: 'provider', admin: 'admin' }
+
   validates :email, presence: true, uniqueness: true
   validates :password, presence: true, length: { minimum: 6 }
+
+  scope :homeowners, -> { where(role: 'homeowner') }
+  scope :providers, -> { where(role: 'provider') }
+  scope :admins, -> { where(role: 'admin') }
 
   def average_rating
     return 0 if provided_reviews.empty?
@@ -22,5 +28,9 @@ class User < ApplicationRecord
   def profile_picture_url
     return nil unless profile_picture.attached?
     Rails.application.routes.url_helpers.rails_blob_url(profile_picture, host: "http://localhost:3001")
+  end
+
+  def is_admin?
+    admin?
   end
 end
