@@ -6,7 +6,7 @@ class User < ApplicationRecord
   has_many :notifications, dependent: :destroy
   has_one_attached :profile_picture
 
-  enum role: { homeowner: 'homeowner', provider: 'provider', admin: 'admin' }
+  enum :role, { homeowner: 'homeowner', provider: 'provider', admin: 'admin' }
 
   validates :email, presence: true, uniqueness: true
   validates :password, presence: true, length: { minimum: 6 }

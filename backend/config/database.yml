@@ -1,21 +1,16 @@
 default: &default
-  adapter: postgresql
-  encoding: unicode
+  adapter: sqlite3
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  username: <%= ENV.fetch("POSTGRES_USER") { "postgres" } %>
-  password: <%= ENV.fetch("POSTGRES_PASSWORD") { "password" } %>
-  host: <%= ENV.fetch("POSTGRES_HOST") { "db" } %>
+  timeout: 5000
 
 development:
   <<: *default
-  database: edger_development
+  database: db/development.sqlite3
 
 test:
   <<: *default
-  database: edger_test
+  database: db/test.sqlite3
 
 production:
   <<: *default
-  database: <%= ENV.fetch("POSTGRES_DB") { "edger_production" } %>
-  username: <%= ENV.fetch("POSTGRES_USER") { "postgres" } %>
-  password: <%= ENV.fetch("POSTGRES_PASSWORD") { "password" } %>
+  database: db/production.sqlite3
