@@ -82,7 +82,11 @@ export default function ProviderDashboard() {
             setUserId(decoded.user_id);
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
             // Fetch user profile for rating and reviews
-            fetch(`${apiUrl}/users/${decoded.user_id}`)
+            fetch(`${apiUrl}/users/${decoded.user_id}`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            })
                 .then(res => res.json())
                 .then(data => {
                     setProfileUser(data);
@@ -474,7 +478,7 @@ export default function ProviderDashboard() {
                                         <Avatar className="h-24 w-24 border-2 border-primary/10">
                                             <AvatarImage src={previewUrl || profileUser.profile_picture_url} alt={profileUser.email} />
                                             <AvatarFallback className="text-2xl bg-primary/5">
-                                                {profileUser.email?.[0].toUpperCase()}
+                                                {profileUser.email?.[0]?.toUpperCase() || "U"}
                                             </AvatarFallback>
                                         </Avatar>
 

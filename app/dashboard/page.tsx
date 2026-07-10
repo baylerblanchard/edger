@@ -375,7 +375,7 @@ export default function DashboardPage() {
                                         <Avatar className="h-24 w-24 border-2 border-primary/10">
                                             <AvatarImage src={previewUrl || profileUser.profile_picture_url} alt={profileUser.email} />
                                             <AvatarFallback className="text-2xl bg-primary/5">
-                                                {profileUser.email?.[0].toUpperCase()}
+                                                {profileUser.email?.[0]?.toUpperCase() || "U"}
                                             </AvatarFallback>
                                         </Avatar>
 

@@ -120,7 +120,7 @@ export default function ProfilePage() {
                             <Avatar className="h-24 w-24 border-2 border-primary/10">
                                 <AvatarImage src={previewUrl || user.profile_picture_url} alt={user.email} />
                                 <AvatarFallback className="text-2xl bg-primary/5">
-                                    {user.email?.[0].toUpperCase()}
+                                    {user.email?.[0]?.toUpperCase() || "U"}
                                 </AvatarFallback>
                             </Avatar>
 
