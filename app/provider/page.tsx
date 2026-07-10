@@ -8,10 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Calendar, CheckCircle2, Briefcase, Star, MessageCircle } from "lucide-react";
+import { MapPin, Calendar, CheckCircle2, Briefcase, Star, MessageCircle, User as UserIcon, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ChatDialog } from "@/components/chat-dialog";
 import { NotificationsMenu } from "@/components/notifications-menu";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 import { useRouter } from "next/navigation";
 
@@ -45,6 +48,13 @@ export default function ProviderDashboard() {
     const [reviews, setReviews] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
+    // Profile and controlled tab states
+    const [activeTab, setActiveTab] = useState("available");
+    const [profileUser, setProfileUser] = useState<any>(null);
+    const [profileUploading, setProfileUploading] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
     // Chat state
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [chatRequestId, setChatRequestId] = useState<number | null>(null);
@@ -75,6 +85,7 @@ export default function ProviderDashboard() {
             fetch(`${apiUrl}/users/${decoded.user_id}`)
                 .then(res => res.json())
                 .then(data => {
+                    setProfileUser(data);
                     if (data.average_rating) setRating(data.average_rating);
                     if (data.total_earnings) setEarnings(data.total_earnings);
                     if (data.provided_reviews) setReviews(data.provided_reviews);
@@ -167,6 +178,56 @@ export default function ProviderDashboard() {
         }
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        router.push("/login");
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setSelectedFile(file);
+            setPreviewUrl(URL.createObjectURL(file));
+        }
+    };
+
+    const handleUpload = async () => {
+        if (!selectedFile || !profileUser) return;
+
+        setProfileUploading(true);
+        const token = localStorage.getItem("token");
+
+        try {
+            const formData = new FormData();
+            formData.append("user[profile_picture]", selectedFile);
+
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+            const res = await fetch(`${apiUrl}/users/${profileUser.id}`, {
+                method: "PUT",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                },
+                body: formData
+            });
+
+            if (res.ok) {
+                const updatedUser = await res.json();
+                setProfileUser(updatedUser);
+                setSelectedFile(null);
+                setPreviewUrl(null);
+                alert("Profile picture updated successfully!");
+            } else {
+                console.error("Upload failed");
+                alert("Failed to upload image.");
+            }
+        } catch (error) {
+            console.error("Error uploading", error);
+        } finally {
+            setProfileUploading(false);
+        }
+    };
+
 
 
     interface JobCardProps {
@@ -249,10 +310,11 @@ export default function ProviderDashboard() {
                                 </div>
                             )}
                         </div>
-                        <Button size="sm" variant="outline" asChild>
-                            <Link href="/profile">
-                                Profile
-                            </Link>
+                        <Button size="sm" variant="outline" onClick={() => setActiveTab("profile")}>
+                            Profile
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={handleLogout}>
+                            Log out
                         </Button>
                     </div>
                 </div>
@@ -261,8 +323,8 @@ export default function ProviderDashboard() {
             <main className="container py-8 max-w-lg mx-auto">
                 <h1 className="text-2xl font-bold mb-6">Provider Dashboard</h1>
 
-                <Tabs defaultValue="available" className="w-full">
-                    <TabsList className="grid w-full grid-cols-3 mb-6">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="grid w-full grid-cols-4 mb-6">
                         <TabsTrigger value="available" className="flex items-center gap-2">
                             <Briefcase className="h-4 w-4" /> Available Jobs
                         </TabsTrigger>
@@ -271,6 +333,9 @@ export default function ProviderDashboard() {
                         </TabsTrigger>
                         <TabsTrigger value="reviews" className="flex items-center gap-2">
                             <Star className="h-4 w-4" /> Reviews
+                        </TabsTrigger>
+                        <TabsTrigger value="profile" className="flex items-center gap-2">
+                            <UserIcon className="h-4 w-4" /> Profile
                         </TabsTrigger>
                     </TabsList>
 
@@ -394,6 +459,62 @@ export default function ProviderDashboard() {
                             <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
                                 <p>No reviews yet. Complete jobs to earn reviews!</p>
                             </div>
+                        )}
+                    </TabsContent>
+
+                    <TabsContent value="profile" className="max-w-md mx-auto">
+                        {profileUser ? (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Profile Settings</CardTitle>
+                                    <CardDescription>Manage your account details and public profile.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-6">
+                                    <div className="flex flex-col items-center gap-4">
+                                        <Avatar className="h-24 w-24 border-2 border-primary/10">
+                                            <AvatarImage src={previewUrl || profileUser.profile_picture_url} alt={profileUser.email} />
+                                            <AvatarFallback className="text-2xl bg-primary/5">
+                                                {profileUser.email?.[0].toUpperCase()}
+                                            </AvatarFallback>
+                                        </Avatar>
+
+                                        <div className="grid w-full max-w-sm items-center gap-1.5">
+                                            <Label htmlFor="picture">Profile Picture</Label>
+                                            <Input id="picture" type="file" onChange={handleFileChange} accept="image/*" />
+                                        </div>
+
+                                        {selectedFile && (
+                                            <Button onClick={handleUpload} disabled={profileUploading}>
+                                                {profileUploading ? "Uploading..." : "Save New Picture"}
+                                            </Button>
+                                        )}
+                                    </div>
+
+                                    <div className="space-y-4 pt-4 border-t">
+                                        <div className="grid gap-2">
+                                            <Label>Email</Label>
+                                            <div className="flex items-center gap-2 p-2 border rounded-md bg-muted/50 text-muted-foreground">
+                                                <Mail className="h-4 w-4" />
+                                                <span>{profileUser.email}</span>
+                                            </div>
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label>Role</Label>
+                                            <div className="flex items-center gap-2 p-2 border rounded-md bg-muted/50 text-muted-foreground capitalize">
+                                                <UserIcon className="h-4 w-4" />
+                                                <span>{profileUser.role}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                                <div className="border-t p-4 flex justify-between items-center text-xs text-muted-foreground">
+                                    <span>
+                                        Member since {new Date(profileUser.created_at).toLocaleDateString()}
+                                    </span>
+                                </div>
+                            </Card>
+                        ) : (
+                            <div className="text-center py-10">Loading profile...</div>
                         )}
                     </TabsContent>
                 </Tabs>

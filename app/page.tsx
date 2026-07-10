@@ -9,10 +9,29 @@ import { ArrowRight, CheckCircle2, Leaf, Clock, Shield } from "lucide-react";
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [dashboardUrl, setDashboardUrl] = useState("/dashboard");
 
   useEffect(() => {
-    setIsLoggedIn(!!localStorage.getItem("token"));
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+    if (token) {
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      if (user.role === "provider") {
+        setDashboardUrl("/provider");
+      } else if (user.role === "admin") {
+        setDashboardUrl("/admin");
+      } else {
+        setDashboardUrl("/dashboard");
+      }
+    }
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    window.location.reload();
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -36,11 +55,16 @@ export default function Home() {
           </nav>
           <div className="flex items-center gap-4">
             {isLoggedIn ? (
-              <Link href="/dashboard">
-                <Button variant="ghost" size="sm">
-                  Dashboard
+              <>
+                <Link href={dashboardUrl}>
+                  <Button variant="ghost" size="sm">
+                    Dashboard
+                  </Button>
+                </Link>
+                <Button variant="outline" size="sm" onClick={handleLogout}>
+                  Log out
                 </Button>
-              </Link>
+              </>
             ) : (
               <Link href="/login">
                 <Button variant="outline" size="sm">

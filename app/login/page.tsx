@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,20 @@ export default function LoginPage() {
     const router = useRouter();
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [error, setError] = useState("");
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            const user = JSON.parse(localStorage.getItem("user") || "{}");
+            if (user.role === "admin") {
+                router.push("/admin");
+            } else if (user.role === "provider") {
+                router.push("/provider");
+            } else {
+                router.push("/dashboard");
+            }
+        }
+    }, [router]);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
