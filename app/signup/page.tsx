@@ -30,7 +30,7 @@ export default function SignupPage() {
             if (res.ok) {
                 const data = await res.json();
                 localStorage.setItem("token", data.token);
-                localStorage.setItem("user", JSON.stringify({ email: data.username }));
+                localStorage.setItem("user", JSON.stringify({ email: data.username, role: data.role }));
 
                 // Redirect based on role
                 if (formData.role === "provider") {

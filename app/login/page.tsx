@@ -29,8 +29,15 @@ export default function LoginPage() {
             if (res.ok) {
                 const data = await res.json();
                 localStorage.setItem("token", data.token);
-                localStorage.setItem("user", JSON.stringify({ email: data.username }));
-                router.push("/"); // Redirect to home
+                localStorage.setItem("user", JSON.stringify({ email: data.username, role: data.role }));
+                
+                if (data.role === "admin") {
+                    router.push("/admin");
+                } else if (data.role === "provider") {
+                    router.push("/provider");
+                } else {
+                    router.push("/dashboard");
+                }
             } else {
                 setError("Invalid email or password");
             }

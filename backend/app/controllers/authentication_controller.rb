@@ -5,7 +5,7 @@ class AuthenticationController < ApplicationController
     if @user&.authenticate(params[:password])
       token = JsonWebToken.encode(user_id: @user.id)
       time = Time.now + 24.hours.to_i
-      render json: { token: token, exp: time.strftime("%m-%d-%Y %H:%M"), username: @user.email }, status: :ok
+      render json: { token: token, exp: time.strftime("%m-%d-%Y %H:%M"), username: @user.email, role: @user.role }, status: :ok
     else
       render json: { error: 'unauthorized' }, status: :unauthorized
     end
@@ -17,7 +17,7 @@ class AuthenticationController < ApplicationController
     if @user.save
       token = JsonWebToken.encode(user_id: @user.id)
       time = Time.now + 24.hours.to_i
-      render json: { token: token, exp: time.strftime("%m-%d-%Y %H:%M"), username: @user.email }, status: :created
+      render json: { token: token, exp: time.strftime("%m-%d-%Y %H:%M"), username: @user.email, role: @user.role }, status: :created
     else
       render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
     end

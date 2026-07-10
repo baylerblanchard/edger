@@ -61,9 +61,14 @@ export default function ProviderDashboard() {
             return;
         }
 
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
+        if (user.role === "homeowner") {
+            router.push("/dashboard");
+            return;
+        }
+
         const decoded = parseJwt(token);
         if (decoded?.user_id) {
-            setUserId(decoded.user_id);
             setUserId(decoded.user_id);
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
             // Fetch user profile for rating and reviews

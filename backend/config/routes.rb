@@ -3,7 +3,11 @@ Rails.application.routes.draw do
   post '/auth/signup', to: 'authentication#signup'
   resources :service_requests
   resources :reviews, only: [:create]
-  resources :payments, only: [:create]
+  resources :payments, only: [:create] do
+    collection do
+      post :confirm
+    end
+  end
   resources :conversations, only: [:index, :show, :create]
   resources :messages, only: [:create]
   resources :notifications, only: [:index] do

@@ -43,6 +43,7 @@ export default function DashboardPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [clientSecret, setClientSecret] = useState<string | null>(null);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+    const [payingRequestId, setPayingRequestId] = useState<number | null>(null);
 
     // Chat state
     const [isChatOpen, setIsChatOpen] = useState(false);
@@ -55,6 +56,7 @@ export default function DashboardPage() {
     };
 
     const handlePay = async (request: Request) => {
+        setPayingRequestId(request.id);
         const token = localStorage.getItem("token");
         if (!token) return;
 
@@ -81,17 +83,45 @@ export default function DashboardPage() {
         }
     };
 
-    const handlePaymentSuccess = () => {
-        setIsPaymentModalOpen(false);
-        setClientSecret(null);
-        // Refresh requests to show paid status
-        window.location.reload();
+    const handlePaymentSuccess = async () => {
+        if (!payingRequestId) return;
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+        try {
+            const res = await fetch(`${apiUrl}/payments/confirm`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ service_request_id: payingRequestId })
+            });
+
+            if (res.ok) {
+                setIsPaymentModalOpen(false);
+                setClientSecret(null);
+                setPayingRequestId(null);
+                window.location.reload();
+            } else {
+                console.error("Failed to confirm payment on backend");
+            }
+        } catch (err) {
+            console.error("Error confirming payment:", err);
+        }
     };
 
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (!token) {
             router.push("/login");
+            return;
+        }
+
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
+        if (user.role === "provider") {
+            router.push("/provider");
             return;
         }
 

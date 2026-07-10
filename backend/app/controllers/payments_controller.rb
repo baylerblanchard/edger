@@ -34,4 +34,29 @@ class PaymentsController < ApplicationController
       render json: { error: e.message }, status: :unprocessable_entity
     end
   end
+
+  def confirm
+    service_request = ServiceRequest.find(params[:service_request_id])
+
+    if service_request.user_id != @current_user.id
+      return render json: { error: 'Not authorized' }, status: :unauthorized
+    end
+
+    if service_request.stripe_payment_intent_id.blank?
+      return render json: { error: 'No stripe payment associated' }, status: :unprocessable_entity
+    end
+
+    begin
+      intent = Stripe::PaymentIntent.retrieve(service_request.stripe_payment_intent_id)
+
+      if intent.status == 'succeeded'
+        service_request.update(payment_status: :paid)
+        render json: { status: 'success', payment_status: service_request.payment_status }
+      else
+        render json: { error: "Stripe payment status is #{intent.status}" }, status: :unprocessable_entity
+      end
+    rescue Stripe::StripeError => e
+      render json: { error: e.message }, status: :unprocessable_entity
+    end
+  end
 end

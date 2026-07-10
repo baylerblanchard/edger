@@ -105,7 +105,7 @@ export default function ProfilePage() {
         <div className="min-h-screen bg-slate-50 dark:bg-background p-4 md:p-8">
             <div className="max-w-md mx-auto">
                 <Button variant="ghost" className="mb-4 pl-0 hover:bg-transparent hover:text-primary" asChild>
-                    <Link href="/provider" className="flex items-center gap-2">
+                    <Link href={user.role === "provider" ? "/provider" : "/dashboard"} className="flex items-center gap-2">
                         <ArrowLeft className="h-4 w-4" /> Back to Dashboard
                     </Link>
                 </Button>

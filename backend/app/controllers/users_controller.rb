@@ -1,5 +1,8 @@
 class UsersController < ApplicationController
+  before_action :authorize_request
   before_action :set_user, only: %i[ show update destroy ]
+  before_action :require_admin, only: %i[ index ]
+  before_action :require_self_or_admin, only: %i[ update destroy ]
 
   # GET /users
   def index
@@ -53,5 +56,17 @@ class UsersController < ApplicationController
     # Only allow a list of trusted parameters through.
     def user_params
       params.expect(user: [ :email, :password_digest, :role, :profile_picture ])
+    end
+
+    def require_admin
+      unless @current_user.admin?
+        render json: { error: 'Unauthorized' }, status: :forbidden
+      end
+    end
+
+    def require_self_or_admin
+      unless @current_user.id == @user.id || @current_user.admin?
+        render json: { error: 'Unauthorized' }, status: :forbidden
+      end
     end
 end
