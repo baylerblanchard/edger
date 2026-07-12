@@ -6,6 +6,7 @@ import { LayoutDashboard, Users, FileText, Settings, LogOut } from "lucide-react
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function AdminSidebar() {
     const pathname = usePathname();
@@ -47,7 +48,11 @@ export function AdminSidebar() {
                     );
                 })}
             </nav>
-            <div className="mt-auto px-4">
+            <div className="mt-auto px-4 space-y-4">
+                <div className="flex items-center justify-between px-2">
+                    <span className="text-xs text-muted-foreground">Appearance</span>
+                    <ThemeToggle />
+                </div>
                 <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-red-500 hover:bg-red-50" onClick={handleLogout}>
                     <LogOut className="h-5 w-5" />
                     Logout

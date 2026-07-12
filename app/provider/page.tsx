@@ -15,6 +15,7 @@ import { NotificationsMenu } from "@/components/notifications-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 import { useRouter } from "next/navigation";
 
@@ -305,6 +306,7 @@ export default function ProviderDashboard() {
                         <span>Edger</span> <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">Pro</span>
                     </Link>
                     <div className="flex items-center gap-4">
+                        <ThemeToggle />
                         <NotificationsMenu />
                         <div className="text-right">
                             <div className="text-sm font-medium text-muted-foreground">My Earnings: ${earnings.toFixed(2)}</div>

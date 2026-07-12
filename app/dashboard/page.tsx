@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface Request {
     id: number;
@@ -111,11 +112,11 @@ export default function DashboardPage() {
             });
 
             if (res.ok) {
-                setIsPaymentModalOpen(false);
-                setClientSecret(null);
-                setPayingRequestId(null);
-                window.location.reload();
-            } else {
+                 setIsPaymentModalOpen(false);
+                 setClientSecret(null);
+                 setPayingRequestId(null);
+                 fetchRequests();
+             } else {
                 console.error("Failed to confirm payment on backend");
             }
         } catch (err) {
@@ -173,6 +174,35 @@ export default function DashboardPage() {
         }
     };
 
+    const fetchRequests = useCallback(async () => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const decoded = parseJwt(token);
+        if (!decoded?.user_id) return;
+
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+        try {
+            const res = await fetch(`${apiUrl}/service_requests?user_id=${decoded.user_id}`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+            if (res.status === 401) {
+                router.push("/login");
+                return;
+            }
+            if (res.ok) {
+                const data = await res.json();
+                setRequests(data || []);
+            }
+        } catch (err) {
+            console.error("Failed to fetch requests:", err);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [router]);
+
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -195,26 +225,7 @@ export default function DashboardPage() {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
         
         // Fetch service requests
-        fetch(`${apiUrl}/service_requests?user_id=${decoded.user_id}`, {
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
-        })
-            .then((res) => {
-                if (res.status === 401) {
-                    router.push("/login");
-                    return [];
-                }
-                return res.json();
-            })
-            .then((data) => {
-                setRequests(data || []);
-                setIsLoading(false);
-            })
-            .catch((err) => {
-                console.error("Failed to fetch requests:", err);
-                setIsLoading(false);
-            });
+        fetchRequests();
 
         // Fetch user profile
         fetch(`${apiUrl}/users/${decoded.user_id}`, {
@@ -231,7 +242,7 @@ export default function DashboardPage() {
         // Set current user ID
         if (decoded?.user_id) setCurrentUserId(decoded.user_id);
 
-    }, [router]);
+    }, [router, fetchRequests]);
 
     const getStatusBadge = (status: string) => {
         switch (status) {
@@ -252,6 +263,7 @@ export default function DashboardPage() {
                         <span>Edger</span>
                     </Link>
                     <div className="flex items-center gap-4">
+                        <ThemeToggle />
                         <NotificationsMenu />
                         <Button size="sm" variant="ghost" onClick={() => setActiveTab("profile")}>
                             Profile
@@ -329,7 +341,7 @@ export default function DashboardPage() {
                                                     {req.status === 'completed' && !req.review && (
                                                         <ReviewDialog
                                                             serviceRequestId={req.id}
-                                                            onReviewSubmitted={() => window.location.reload()}
+                                                            onReviewSubmitted={fetchRequests}
                                                         />
                                                     )}
                                                     {req.status === 'completed' && req.review && (

@@ -135,14 +135,17 @@ export function ChatDialog({ serviceRequestId, open, onOpenChange, currentUserId
         }
     };
 
+    const otherParticipantEmail = messages.find(m => m.user_id !== currentUserId)?.sender?.email;
+    const chatTitle = otherParticipantEmail ? `Chat with ${otherParticipantEmail}` : "Chat Support";
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md h-[500px] flex flex-col">
                 <DialogHeader>
-                    <DialogTitle>Chat</DialogTitle>
+                    <DialogTitle className="text-base truncate max-w-[90%]">{chatTitle}</DialogTitle>
                 </DialogHeader>
 
-                <div className="flex-1 overflow-y-auto p-4 space-y-4 border rounded-md bg-slate-50 dark:bg-slate-900/50">
+                <div className="flex-1 overflow-y-auto p-4 space-y-4 border rounded-md bg-slate-50 dark:bg-slate-950/20">
                     {isLoading ? (
                         <div className="text-center text-sm text-muted-foreground">Loading chat...</div>
                     ) : messages.length === 0 ? (
@@ -153,11 +156,13 @@ export function ChatDialog({ serviceRequestId, open, onOpenChange, currentUserId
                             return (
                                 <div key={msg.id} className={cn("flex w-full", isMe ? "justify-end" : "justify-start")}>
                                     <div className={cn(
-                                        "max-w-[80%] rounded-lg px-3 py-2 text-sm",
-                                        isMe ? "bg-primary text-primary-foreground" : "bg-white dark:bg-slate-800 border"
+                                        "max-w-[80%] rounded-2xl px-4 py-2 text-sm shadow-sm",
+                                        isMe 
+                                            ? "bg-primary text-primary-foreground rounded-br-none" 
+                                            : "bg-white dark:bg-slate-900 border text-slate-800 dark:text-slate-100 rounded-bl-none"
                                     )}>
-                                        <p>{msg.content}</p>
-                                        <span className="text-[10px] opacity-70 block text-right mt-1">
+                                        <p className="break-words">{msg.content}</p>
+                                        <span className="text-[9px] opacity-70 block text-right mt-1 font-mono">
                                             {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                         </span>
                                     </div>

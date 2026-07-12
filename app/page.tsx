@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2, Leaf, Clock, Shield } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -54,6 +55,7 @@ export default function Home() {
             </Link>
           </nav>
           <div className="flex items-center gap-4">
+            <ThemeToggle />
             {isLoggedIn ? (
               <>
                 <Link href={dashboardUrl}>

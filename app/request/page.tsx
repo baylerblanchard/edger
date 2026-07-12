@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -34,6 +35,7 @@ const SERVICES = [
 ];
 
 export default function RequestServicePage() {
+    const router = useRouter();
     const [selectedServices, setSelectedServices] = useState<string[]>([]);
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
@@ -159,11 +161,10 @@ export default function RequestServicePage() {
                                 Next Step
                             </Button>
                         ) : (
-                            <Button onClick={() => {
+                             <Button onClick={() => {
                                 const token = localStorage.getItem("token");
                                 if (!token) {
-                                    alert("Please log in to book a service");
-                                    // In a real app, router.push("/login")
+                                    router.push("/login");
                                     return;
                                 }
 
@@ -186,17 +187,14 @@ export default function RequestServicePage() {
                                 })
                                     .then(async res => {
                                         if (res.ok) {
-                                            alert("Booking Confirmed!");
-                                            // Reset form or redirect
-                                            setStep(1);
-                                            setSelectedServices([]);
-                                            setFormData({ address: "", date: "", price: "45" });
+                                            // Redirect straight to dashboard so they see the pending request
+                                            router.push("/dashboard");
                                         } else {
                                             const data = await res.json();
                                             alert("Error booking service: " + JSON.stringify(data));
                                         }
                                     })
-                                    .catch(err => alert("Error: " + err));
+                                    .catch(err => console.error("Error booking request:", err));
                             }}>
                                 Confirm Booking
                             </Button>
