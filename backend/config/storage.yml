@@ -19,7 +19,7 @@ google:
   service: GCS
   # project: your_project # Not needed if running on GCE/Cloud Run with implicit auth
   # credentials: <%= Rails.root.join("path/to/gcs.keyfile") %> # Not needed if running on GCE/Cloud Run with implicit auth
-  bucket: <%= ENV.fetch("GOOGLE_STORAGE_BUCKET") %>
+  bucket: <%= ENV.fetch("GOOGLE_STORAGE_BUCKET", "edger-storage") %>
 
 # mirror:
 #   service: Mirror

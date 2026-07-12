@@ -16,6 +16,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { CompleteJobDialog } from "@/components/complete-job-dialog";
+import { JobsMap } from "@/components/jobs-map";
 
 import { useRouter } from "next/navigation";
 
@@ -59,6 +61,10 @@ export default function ProviderDashboard() {
     // Chat state
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [chatRequestId, setChatRequestId] = useState<number | null>(null);
+
+    // Job Completion modal states
+    const [completingJobId, setCompletingJobId] = useState<number | null>(null);
+    const [isCompleteDialogOpen, setIsCompleteDialogOpen] = useState(false);
 
     const handleChat = (requestId: number) => {
         setChatRequestId(requestId);
@@ -158,21 +164,24 @@ export default function ProviderDashboard() {
         }
     };
 
-    const completeJob = async (jobId: number) => {
+    const completeJob = async (jobId: number, afterPhotoFile?: File | null) => {
         const token = localStorage.getItem("token");
         if (!token) return;
 
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+            const formData = new FormData();
+            formData.append("service_request[status]", "completed");
+            if (afterPhotoFile) {
+                formData.append("service_request[after_picture]", afterPhotoFile);
+            }
+
             const res = await fetch(`${apiUrl}/service_requests/${jobId}`, {
                 method: "PATCH",
                 headers: {
-                    "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 },
-                body: JSON.stringify({
-                    service_request: { status: "completed" }
-                })
+                body: formData
             });
 
             if (res.ok) {
@@ -181,6 +190,11 @@ export default function ProviderDashboard() {
         } catch (err) {
             console.error("Error completing job:", err);
         }
+    };
+
+    const handleCompleteClick = (jobId: number) => {
+        setCompletingJobId(jobId);
+        setIsCompleteDialogOpen(true);
     };
 
     const handleLogout = () => {
@@ -346,6 +360,21 @@ export default function ProviderDashboard() {
                     </TabsList>
 
                     <TabsContent value="available" className="space-y-4">
+                        {!loading && availableJobs.length > 0 && (
+                            <div className="mb-2 space-y-2">
+                                <h3 className="text-sm font-semibold text-muted-foreground">Nearby Job Locations Map</h3>
+                                <JobsMap
+                                    pins={availableJobs.map(job => ({
+                                        id: job.id,
+                                        title: job.service_type,
+                                        address: job.address,
+                                        latitude: Number(job.latitude),
+                                        longitude: Number(job.longitude),
+                                        price: job.price || "45.00"
+                                    })).filter(p => p.latitude && p.longitude)}
+                                />
+                            </div>
+                        )}
                         {loading ? (
                             <div className="space-y-4">
                                 <Skeleton className="h-48 w-full rounded-xl" />
@@ -366,7 +395,7 @@ export default function ProviderDashboard() {
                                             job={job}
                                             isMyJob={false}
                                             onAccept={acceptJob}
-                                            onComplete={completeJob}
+                                            onComplete={handleCompleteClick}
                                             onChat={handleChat}
                                         />
                                     </motion.div>
@@ -380,6 +409,21 @@ export default function ProviderDashboard() {
                     </TabsContent>
 
                     <TabsContent value="schedule" className="space-y-4">
+                        {!loading && myJobs.length > 0 && (
+                            <div className="mb-2 space-y-2">
+                                <h3 className="text-sm font-semibold text-muted-foreground">My Scheduled Job Locations Map</h3>
+                                <JobsMap
+                                    pins={myJobs.map(job => ({
+                                        id: job.id,
+                                        title: job.service_type,
+                                        address: job.address,
+                                        latitude: Number(job.latitude),
+                                        longitude: Number(job.longitude),
+                                        price: job.price || "45.00"
+                                    })).filter(p => p.latitude && p.longitude)}
+                                />
+                            </div>
+                        )}
                         {loading ? (
                             <div className="space-y-4">
                                 <Skeleton className="h-48 w-full rounded-xl" />
@@ -399,7 +443,7 @@ export default function ProviderDashboard() {
                                             job={job}
                                             isMyJob={true}
                                             onAccept={acceptJob}
-                                            onComplete={completeJob}
+                                            onComplete={handleCompleteClick}
                                             onChat={handleChat}
                                         />
                                     </motion.div>
@@ -531,6 +575,13 @@ export default function ProviderDashboard() {
                 onOpenChange={setIsChatOpen}
                 serviceRequestId={chatRequestId}
                 currentUserId={userId}
+            />
+
+            <CompleteJobDialog
+                jobId={completingJobId}
+                open={isCompleteDialogOpen}
+                onOpenChange={setIsCompleteDialogOpen}
+                onSuccess={completeJob}
             />
         </div >
     );

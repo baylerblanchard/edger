@@ -328,6 +328,19 @@ export default function DashboardPage() {
                                                     )}
                                                 </div>
 
+                                                {req.after_picture_url && (
+                                                    <div className="mt-4 space-y-2">
+                                                        <span className="text-xs font-semibold text-muted-foreground">Service Proof (After)</span>
+                                                        <div className="relative overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 max-w-md shadow-sm">
+                                                            <img
+                                                                src={req.after_picture_url}
+                                                                alt="Service completion proof"
+                                                                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                )}
+
                                                 {/* Actions */}
                                                 <div className="flex justify-end gap-2 mt-4">
                                                     {/* Chat Button (Visible for accepted/completed jobs) */}

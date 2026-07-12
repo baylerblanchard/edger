@@ -88,6 +88,6 @@ class ServiceRequestsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def service_request_params
-      params.expect(service_request: [ :service_type, :status, :address, :scheduled_date, :price ])
+      params.expect(service_request: [ :service_type, :status, :address, :scheduled_date, :price, :before_picture, :after_picture ])
     end
 end
